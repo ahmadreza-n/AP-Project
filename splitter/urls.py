@@ -5,7 +5,7 @@ from blog.views import blog_post_create_view
 
 
 from searches.views import search_view
-from .views import home_page, about_page, contact_page, example_page
+from .views import home_page, about_page, contact_page
 
 
 urlpatterns = [
@@ -18,7 +18,6 @@ urlpatterns = [
     path('pages/', about_page),
     re_path(r'^pages?/$', about_page),
     re_path(r'^about/$', about_page),
-    path('example/', example_page),
     path('contact/', contact_page),
     path('admin/', admin.site.urls),
 ]

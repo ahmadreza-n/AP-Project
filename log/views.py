@@ -14,7 +14,7 @@ from .models import LogUser
 def user_detail_view(request, user_name):
     user = LogUser.objects.get(user_name=user_name)
     context = {"title": "User Detail", 'user': user}
-    template_name = f'log/user-detail.html'
+    template_name = 'log/user-detail.html'
     return render(request, template_name, context)
 
 

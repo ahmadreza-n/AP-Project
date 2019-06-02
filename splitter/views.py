@@ -1,6 +1,5 @@
-from django.http import HttpResponse
 from django.shortcuts import render
-from django.template.loader import get_template
+
 
 from .forms import ContactForm
 from blog.models import BlogPost
@@ -13,7 +12,8 @@ def home_page(request):
 
 
 def about_page(request):
-    return render(request, "about.html", {"title": "About us"})
+    context = {"title": "About us"}
+    return render(request, "about.html", context)
 
 
 def contact_page(request):
@@ -26,11 +26,3 @@ def contact_page(request):
         "form": form
     }
     return render(request, "form.html", context)
-
-
-def example_page(request):
-    context = {"title": "Example"}
-    template_name = "hello_world.html"
-    template_obj = get_template(template_name)
-    rendered_item = template_obj.render(context)
-    return HttpResponse(rendered_item)
