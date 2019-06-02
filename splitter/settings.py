@@ -11,7 +11,7 @@ ALLOWED_HOSTS = []
 LOGIN_URL = '/login'
 
 # Application definition
-INSTALLED_APPS = [ # components
+INSTALLED_APPS = [  # components
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -92,12 +92,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 
-LOCAL_STATIC_CDN_PATH = os.path.join(os.path.dirname(BASE_DIR), 'static_cdn_test')
+LOCAL_STATIC_CDN_PATH = os.path.join(
+    os.path.dirname(BASE_DIR), 'static_cdn_test')
 
-STATIC_ROOT = os.path.join(LOCAL_STATIC_CDN_PATH, 'static') # live cdn AWS S3
+STATIC_ROOT = os.path.join(LOCAL_STATIC_CDN_PATH, 'static')  # live cdn AWS S3
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'staticfiles')
-] 
+]
 
 MEDIA_ROOT = os.path.join(LOCAL_STATIC_CDN_PATH, 'media')
-MEDIA_URL = '/media/' # django-storages
+MEDIA_URL = '/media/'  # django-storages

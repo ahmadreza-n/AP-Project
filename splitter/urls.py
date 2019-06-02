@@ -1,17 +1,12 @@
 from django.conf import settings
 from django.contrib import admin
 from django.urls import path, re_path, include
-from blog.views import (
-    blog_post_create_view,
-)
+from blog.views import blog_post_create_view
+
 
 from searches.views import search_view
-from .views import (
-    home_page,
-    about_page,
-    contact_page,
-    example_page
-)
+from .views import home_page, about_page, contact_page, example_page
+
 
 urlpatterns = [
     path('', home_page),
@@ -30,11 +25,7 @@ urlpatterns = [
 
 if settings.DEBUG:
     from django.conf.urls.static import static
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-
-
-
-
-
+    urlpatterns += static(settings.STATIC_URL,
+                          document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)
