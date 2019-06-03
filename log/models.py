@@ -46,6 +46,10 @@ class LogUser(models.Model):  # blogpost_set -> queryset
 
     def __str__(self):
         return self.user_name
+
+    def get_absolute_url(self):
+        return f"/log/add-group/{self.user_name}"
+
     # user2    = models.ForeignKey(User, default=1, null=True, on_delete=models.SET_NULL)
     # image   = models.ImageField(upload_to='image/', blank=True, null=True)
     # publish_date = models.DateTimeField(auto_now=False, auto_now_add=False, null=True, blank=True)
@@ -65,3 +69,13 @@ class LogUser(models.Model):  # blogpost_set -> queryset
 
 #     def get_delete_url(self):
 #         return f"{self.get_absolute_url()}/delete"
+
+
+class Group(models.Model):
+    group_name = models.CharField(max_length=20)
+    admin = models.ForeignKey(LogUser, on_delete=models.CASCADE)
+
+
+class GroupUser(models.Model):
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    user = models.ForeignKey(LogUser, on_delete=models.CASCADE)

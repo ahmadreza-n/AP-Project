@@ -16,9 +16,9 @@
 <ul class="list-group">
     {% for group in groups %}
     <a href="">
-        <li class="list-group-item">{{ group.name }}</li>
+        <li class="list-group-item">{{ group }}</li>
     </a>
     {% endfor %}
 </ul>
-<a class="btn btn-primary" href="#" role="button">Add Group</a>
+<a class="btn btn-primary" href="{{ user.get_absolute_url }}" role="button">Add Group</a>
 {% endblock %}

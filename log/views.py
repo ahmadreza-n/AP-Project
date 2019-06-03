@@ -4,8 +4,8 @@
 from django.shortcuts import render, redirect  # , get_object_or_404, redirect
 # from django.http import HttpResponseRedirect
 
-from .forms import LogUserModelForm, LogUserModelFormm
-from .models import LogUser
+from .forms import LogUserModelForm, LogUserModelFormm, GroupModelForm
+from .models import LogUser, Group
 
 
 # Create your views here.
@@ -13,7 +13,8 @@ from .models import LogUser
 
 def user_detail_view(request, user_name):
     user = LogUser.objects.get(user_name=user_name)
-    context = {"title": "User Detail", 'user': user}
+    context = {"title": "User Detail",
+               'user': user, 'groups': ['assef', 'ahmad']}
     template_name = 'log/user-detail.html'
     return render(request, template_name, context)
 
@@ -25,7 +26,6 @@ def sign_in_view(request):
             user_name = form.data['user_name']
             password = form.data['password']
             user = LogUser.objects.get(user_name=user_name, password=password)
-            print(user.first_name)
             return redirect(user_detail_view, user_name=user_name)
         except:
             template_name = 'log/sign-in.html'
@@ -48,9 +48,9 @@ def sign_up_view(request):
     return render(request, template_name, context)
 
 
-def logout_view(request):
-    template_name = 'log/logout.html'
-    context = {'title': 'Logout'}
+def logout_view(request): 
+    template_name = 'log/luser_nameogout.html'
+    context = {'title': 'Luser_nameogout'}
     return render(request, template_name, context)
 
 
@@ -61,6 +61,18 @@ def list_view(request):
     return render(request, template_name, context)
 
 
+def add_group_view(request, user_name):
+    form = GroupModelForm(request.POST or None)
+    if form.is_valid():
+        try:
+            print(form.data['group_name'])
+            # group = Group.objects.create(group_name=form.group_name, admin=user_name)
+
+        except:
+            print('fuck')
+    template_name = 'log/add-group.html'
+    context = {'form': form, "title": "Add New Group"}
+    return render(request, template_name, context)
 # def blog_post_list_view(request):
 #     # list out objects
 #     # could be search
@@ -86,7 +98,7 @@ def list_view(request):
 #         obj.user = request.user
 #         obj.save()
 #         form = BlogPostModelForm()
-#     template_name = 'form.html'
+#     template_name = 'form.models.CASCADEhtml'
 #     context = {'form': form}
 #     return render(request, template_name, context)
 

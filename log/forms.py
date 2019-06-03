@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import LogUser
+from .models import LogUser, Group
 
 # class BlogPostForm(forms.Form):
 #     title = forms.CharField()
@@ -19,6 +19,14 @@ class LogUserModelFormm(forms.ModelForm):
     class Meta:
         model = LogUser
         fields = ['user_name', 'password']
+
+
+class GroupModelForm(forms.ModelForm):
+    class Meta:
+        model = Group
+        fields = ['group_name']
+
+
 # class BlogPostModelForm(forms.ModelForm):
 #     class Meta:
 #         model = BlogPost
