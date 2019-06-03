@@ -4,13 +4,13 @@
 {% block content %}
 
 <div class='row'>
-    {% for user in user_list %}
+    {% for account in accounts %}
     <div class='col-12 col-md-10 mb-3 mx-auto'>
         <div class='card'>
             <div class='card-body'>
-                <h5 class='card-title'>{{ user.user_name }}</h5>
+                <h5 class='card-title'>{{ account.account_id }}</h5>
                 <p class='card-text'>
-                    <small class='text-muted'>{{ user.first_name }}</small>
+                    <small class='text-muted'>{{ account.first_name }}</small>
                 </p>
             </div>
 

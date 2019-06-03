@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 
 
-from .forms import AccountModelForm, AccountModelFormm, GroupModelForm, ContactForm
-from .models import Account, Group
+from .forms import (AccountModelForm, AccountForm,
+                    GroupForm, ContactForm)
+from .models import Account, Group, GroupAccount
 
 
 def home_page(request):
@@ -28,28 +29,29 @@ def sign_up_view(request):
     form = AccountModelForm(request.POST or None)
     if form.is_valid():
         form.save()
-        return redirect(user_view, user_name=form.data['user_name'])
+        return redirect(account_view, account_id=form.data['account_id'])
     template_name = 'sign-up.html'
     context = {'form': form, 'title': 'SignUp'}
     return render(request, template_name, context)
 
 
-def user_view(request, user_name):
-    user = Account.objects.get(user_name=user_name)
-    context = {"title": "User Detail",
-               'user': user, 'groups': ['assef', 'ahmad']}
-    template_name = 'user-detail.html'
+def account_view(request, account_id):
+    account = Account.objects.get(account_id=account_id)
+    context = {"title": "Account Detail",
+               'account': account, 'groups': ['assef', 'ahmad']}
+    template_name = 'account.html'
     return render(request, template_name, context)
 
 
 def sign_in_view(request):
-    form = AccountModelFormm(request.POST or None)
+    form = AccountForm(request.POST or None)
     if form.is_valid():
         try:
-            user_name = form.data['user_name']
+            account_id = form.data['account_id']
             password = form.data['password']
-            Account.objects.get(user_name=user_name, password=password)
-            return redirect(user_view, user_name=user_name)
+            print(password)
+            Account.objects.get(account_id=account_id, password=password)
+            return redirect(account_view, account_id=account_id)
         except:
             template_name = 'sign-in.html'
             context = {'form': form, "title": "SignIn Error"}
@@ -66,32 +68,35 @@ def sign_out_view(request):
 
 
 def list_view(request):
-    user_list = Account.objects.all()
+    accounts = Account.objects.all()
     template_name = 'list.html'
-    context = {'user_list': user_list, 'title': 'Logout'}
+    context = {'accounts': accounts, 'title': 'List View'}
     return render(request, template_name, context)
 
 
-def add_group_view(request, user_name):
-    form = GroupModelForm(request.POST or None)
+def add_group_view(request, account_id):
+    form = GroupForm(request.POST or None)
     if form.is_valid():
         try:
-            admin = Account.objects.get(user_name=user_name)
-            group = Group.objects.create(group_name=form.data['group_name'], admin=admin)
+            group_id = form.data['group_id']
+            group_name = form.data['group_name']
+            account = Account.objects.get(account_id=account_id)
+            group = Group(group_id=group_id, group_name=group_name)
             group.save()
-            return redirect(group_view, user_name=user_name, group_name=form.data['group_name'])
+            return redirect(group_view, account_id=account_id, group_id=group_id)
         except:
             template_name = 'add-group.html'
             context = {'form': form, "title": "Add New Group Error"}
             return render(request, template_name, context)
     else:
         template_name = 'add-group.html'
-        context = {'form': form, "title": "Add New Group"}
+        account = Account.objects.get(account_id=account_id)
+        context = {'form': form, "title": "Add New Group", 'account': account}
         return render(request, template_name, context)
 
 
-def group_view(request, user_name, group_name):
+def group_view(request, account_id, group_id):
     template_name = 'group.html'
-    group = Group.objects.get(group_name=group_name)
+    group = Group.objects.get(group_id=group_id)
     context = {'title': 'Group', 'group': group}
     return render(request, template_name, context)

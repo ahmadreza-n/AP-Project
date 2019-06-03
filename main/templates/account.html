@@ -5,10 +5,10 @@
 <div class='col-12 col-md-10 mb-3 mx-auto'>
     <div class='card'>
         <div class='card-body'>
-            <p class='card-title'>{{ user.first_name }}</p>
-            <p class='card-title'>{{ user.last_name }}</p>
-            <p class='card-text'>{{ user.user_name }}</p>
-            <p class='card-text'>{{ user.description }}</p>
+            <p class='card-title'>{{ account.first_name }}</p>
+            <p class='card-title'>{{ account.last_name }}</p>
+            <p class='card-text'>{{ account.account_id }}</p>
+            <p class='card-text'>{{ account.description }}</p>
         </div>
     </div>
 </div>
@@ -20,5 +20,5 @@
     </a>
     {% endfor %}
 </ul>
-<a class="btn btn-primary" href="{{ user.get_absolute_url }}" role="button">Add Group</a>
+<a class="btn btn-primary" href="{{ account.get_absolute_url }}" role="button">Add Group</a>
 {% endblock %}

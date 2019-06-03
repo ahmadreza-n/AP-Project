@@ -21,16 +21,14 @@ class AccountModelForm(forms.ModelForm):
     class Meta:
         model = Account
         fields = ['first_name', 'last_name',
-                  'user_name', 'password', 'description']
+                  'account_id', 'password']
 
 
-class AccountModelFormm(forms.ModelForm):
-    class Meta:
-        model = Account
-        fields = ['user_name', 'password']
+class AccountForm(forms.Form):
+    account_id = forms.SlugField(max_length=20)
+    password = forms.CharField(max_length=20)
 
 
-class GroupModelForm(forms.ModelForm):
-    class Meta:
-        model = Group
-        fields = ['group_name']
+class GroupForm(forms.Form):
+    group_id = forms.SlugField(max_length=20)
+    group_name = forms.CharField(max_length=20)
