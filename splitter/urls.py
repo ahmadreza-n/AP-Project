@@ -1,26 +1,19 @@
 from django.conf import settings
 from django.contrib import admin
-from django.urls import path, re_path, include
-from blog.views import blog_post_create_view
+from django.urls import path, include
 
 
-from searches.views import search_view
-from .views import home_page, about_page, contact_page
+from . import views
 
 
 urlpatterns = [
-    path('', home_page),
-    path('blog-new/', blog_post_create_view),
-    path('blog/', include('blog.urls')),
-    path('log/', include('log.urls')),
-    path('search/', search_view),
-    path('page/', about_page),
-    path('pages/', about_page),
-    re_path(r'^pages?/$', about_page),
-    re_path(r'^about/$', about_page),
-    path('contact/', contact_page),
+    path('', views.home_page),
+    path('about/', views.about_page),
+    path('contact/', views.contact_page),
     path('admin/', admin.site.urls),
+    path('', include('log.urls')),
 ]
+
 
 if settings.DEBUG:
     from django.conf.urls.static import static
