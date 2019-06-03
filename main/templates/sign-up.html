@@ -6,7 +6,7 @@
 <h1>{{ title }}</h1>
 {% endif %}
 
-<form method='POST' action='./sign-in'> {% csrf_token %}
+<form method='POST' action='/sign-up'> {% csrf_token %}
     {{ form.as_p }}
     <button type='submit'>Send</button>
 </form>

@@ -1,10 +1,7 @@
-# from django.conf import settings
 from django.db import models
-# from django.db.models import Q
-# from django.utils import timezone
 
 
-class LogUser(models.Model):  # blogpost_set -> queryset
+class LogUser(models.Model):
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
     user_name = models.SlugField(max_length=20)
@@ -15,7 +12,7 @@ class LogUser(models.Model):  # blogpost_set -> queryset
         return self.user_name
 
     def get_absolute_url(self):
-        return f"/log/add-group/{self.user_name}"
+        return f"/add-group/{self.user_name}"
 
 
 class Group(models.Model):
