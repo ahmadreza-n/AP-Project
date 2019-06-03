@@ -1,5 +1,5 @@
 from django import forms
-from .models import LogUser, Group
+from .models import Account, Group
 
 
 class ContactForm(forms.Form):
@@ -17,16 +17,16 @@ class ContactForm(forms.Form):
         return email
 
 
-class LogUserModelForm(forms.ModelForm):
+class AccountModelForm(forms.ModelForm):
     class Meta:
-        model = LogUser
+        model = Account
         fields = ['first_name', 'last_name',
                   'user_name', 'password', 'description']
 
 
-class LogUserModelFormm(forms.ModelForm):
+class AccountModelFormm(forms.ModelForm):
     class Meta:
-        model = LogUser
+        model = Account
         fields = ['user_name', 'password']
 
 

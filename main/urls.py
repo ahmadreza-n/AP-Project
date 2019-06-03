@@ -1,4 +1,3 @@
-from django.contrib import admin
 from django.urls import path
 
 
@@ -13,6 +12,7 @@ urlpatterns = [
     path('sign-up', views.sign_up_view),
     path('sign-out', views.sign_out_view),
     path('list', views.list_view),
-    path('<str:user_name>', views.user_detail_view),
+    path('<str:user_name>', views.user_view),
     path('add-group/<str:user_name>', views.add_group_view),
+    path('<str:user_name>/<str:group_name>', views.group_view),
 ]
