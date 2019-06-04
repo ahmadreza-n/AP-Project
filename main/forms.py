@@ -33,3 +33,7 @@ class AccountForm(forms.Form):
 class GroupForm(forms.Form):
     group_id = forms.SlugField(max_length=20)
     group_name = forms.CharField(max_length=20)
+
+
+class AddMemberForm(forms.Form):
+    member_id = forms.SlugField(max_length=20)

@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 
+{% if title %}
+<h1>{{ title }}</h1>
+{% endif %}
 
 {% block content %}
 <div class='col-12 col-md-10 mb-3 mx-auto'>
@@ -13,12 +16,19 @@
     </div>
 </div>
 
-<ul class="list-group">
-    {% for group in groups %}
-    <a href="">
-        <li class="list-group-item">{{ group }}</li>
-    </a>
-    {% endfor %}
-</ul>
-<a class="btn btn-primary" href="{{ account.get_absolute_url }}" role="button">Add Group</a>
+{% for group in groups %}
+    <ul class="list-group">
+        <a href="{{ account.get_absolute_url }}{{ group.get_absolute_url }}">
+            <li class="list-group-item">
+                Groupe id: {{ group.group_id }}
+                </br>
+                Group name: {{ group.group_name }}
+                </br>
+                Group admin: {{ group.admin_id }}
+            </li>
+        </a>
+    </ul>
+{% endfor %}
+
+<a class="btn btn-primary" href="{{ account.get_add_url }}" role="button">Add Group</a>
 {% endblock %}
