@@ -17,17 +17,17 @@
 </div>
 
 {% for group in groups %}
-    <ul class="list-group">
-        <a href="{{ account.get_absolute_url }}{{ group.get_absolute_url }}">
-            <li class="list-group-item">
-                Groupe id: {{ group.group_id }}
-                </br>
-                Group name: {{ group.group_name }}
-                </br>
-                Group admin: {{ group.admin_id }}
-            </li>
-        </a>
-    </ul>
+<ul class="list-group">
+    <a href="{{ account.get_absolute_url }}{{ group.group.get_absolute_url }}">
+        <li class="list-group-item">
+            Groupe id: {{ group.group.group_id }}
+            </br>
+            Group name: {{ group.group.group_name }}
+            </br>
+            Group admin: {{ group.group.admin.account_id }}
+        </li>
+    </a>
+</ul>
 {% endfor %}
 
 <a class="btn btn-primary" href="{{ account.get_add_url }}" role="button">Add Group</a>

@@ -8,13 +8,22 @@
 <div class='col-12 col-md-10 mb-3 mx-auto'>
     <div class='card'>
         <div class='card-body'>
-            <p class='card-title'>{{ group.group_id }}</p>
-            <p class='card-title'>{{ group.group_name }}</p>
-            <p class='card-title'>{{ group.admin_id }}</p>
+            <p class='card-title'>Group id: {{ group.group_id }}</p>
+            <p class='card-title'>Group name: {{ group.group_name }}</p>
+            <p class='card-title'>Group admin: {{ group.admin.account_id}}</p>
         </div>
     </div>
 </div>
-<a class="btn btn-primary" href="#" role="button">Add Record</a>
+{% for member in members %}
+<ul class="list-group">
+    <li class="list-group-item">
+        Member id: {{ member.member.account_id }}
+        </br>
+        Member name: {{ member.member.first_name }} {{ member.member.last_name }}
+    </li>
+</ul>
+{% endfor %}
+<a class="btn btn-primary" href="{{ account.get_absolute_url }}{{ group.get_absolute_url }}/add-record" role="button">Add Record</a>
 
 <form method='POST' action='' enctype='multipart/form-data'> {% csrf_token %}
     {{ form.as_p }}

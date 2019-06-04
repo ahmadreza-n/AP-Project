@@ -11,7 +11,7 @@ class Account(models.Model):
         return self.account_id
 
     def get_add_url(self):
-        return f"/add-group/{self.account_id}"
+        return f"/{self.account_id}/add-group"
 
     def get_absolute_url(self):
         return f"/{self.account_id}"
@@ -20,7 +20,7 @@ class Account(models.Model):
 class Group(models.Model):
     group_id = models.SlugField(max_length=20, unique=True)
     group_name = models.CharField(max_length=20)
-    admin_id = models.ForeignKey(Account, to_field='account_id', on_delete=models.CASCADE, null=True)
+    admin = models.ForeignKey(Account, to_field='account_id', on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.group_id
@@ -30,10 +30,8 @@ class Group(models.Model):
 
 
 class GroupMember(models.Model):
-    group_id = models.ForeignKey(Group, to_field='group_id', on_delete=models.CASCADE)
-    member_id = models.ForeignKey(Account, to_field='account_id', on_delete=models.CASCADE)
-    # group_id = models.CharField(max_length=20)
-    # member_id = models.CharField(max_length=20)
+    group = models.ForeignKey(Group, to_field='group_id', on_delete=models.CASCADE)
+    member = models.ForeignKey(Account, to_field='account_id', on_delete=models.CASCADE)
 
     def __str__(self):
-        return str(self.member_id) + ' is in: ' + str(self.group_id)
+        return str(self.member) + ' is in: ' + str(self.group)
