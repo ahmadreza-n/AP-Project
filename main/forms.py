@@ -18,6 +18,7 @@ class ContactForm(forms.Form):
 
 
 class AccountModelForm(forms.ModelForm):
+    password = forms.CharField(max_length=20, widget=forms.PasswordInput)
     class Meta:
         model = Account
         fields = ['first_name', 'last_name',
@@ -26,7 +27,7 @@ class AccountModelForm(forms.ModelForm):
 
 class AccountForm(forms.Form):
     account_id = forms.SlugField(max_length=20)
-    password = forms.CharField(max_length=20)
+    password = forms.CharField(max_length=20, widget=forms.PasswordInput)
 
 
 class GroupForm(forms.Form):
