@@ -19,6 +19,7 @@ class ContactForm(forms.Form):
 
 class AccountModelForm(forms.ModelForm):
     password = forms.CharField(max_length=20, widget=forms.PasswordInput)
+
     class Meta:
         model = Account
         fields = ['first_name', 'last_name',
@@ -37,3 +38,7 @@ class GroupForm(forms.Form):
 
 class AddMemberForm(forms.Form):
     member_id = forms.SlugField(max_length=20)
+
+
+class ConsumerForm(forms.Form):
+    sahm = forms.CharField(max_length=20, label=' fucker')

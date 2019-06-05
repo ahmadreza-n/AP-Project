@@ -6,8 +6,10 @@
 <h1>{{ title }}</h1>
 {% endif %}
 
-<form method='POST' action="{{ account.get_add_url }}"> {% csrf_token %}
-    <!-- {{ form.as_p }} -->
+<form method='POST' action=""> {% csrf_token %}
+    {% for form in forms %}
+    {{ form.as_p }}
+    {% endfor %}
     <button type='submit'>Add</button>
 </form>
 {% endblock %}

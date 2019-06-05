@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 
 
 from .forms import (AccountModelForm, AccountForm,
-                    GroupForm, ContactForm, AddMemberForm)
+                    GroupForm, ContactForm, AddMemberForm, ConsumerForm)
 from .models import Account, Group, GroupMember
 
 
@@ -85,10 +85,9 @@ def add_group_view(request, account_id):
         try:
             group_id = form.data['group_id']
             group_name = form.data['group_name']
-            group = Group(group_id=group_id,
-                          group_name=group_name, admin=account)
+            group = Group(group_id=group_id, group_name=group_name, admin=account)
             group.save()
-            GroupMember(group=group, member=admin).save()
+            GroupMember(group=group, member=account).save()
             return redirect(group_view, account_id=account_id, group_id=group_id)
         except Exception as exception:
             print(exception)
@@ -126,9 +125,16 @@ def group_view(request, account_id, group_id):
 
 
 def add_record_view(request, account_id, group_id):
-    form = None
+    names_list = []
+    if request.method == 'POST':
+        for key, value in request.POST.lists():
+            if key == 'sahm':
+                names_list = value
+        print(names_list)
+    forms = [ConsumerForm(None), ConsumerForm(None)]
     template_name = 'add-record.html'
-    group = Group.objects.get(group_id=group_id)
-    account = Account.objects.get(account_id=account_id)
-    context = {'title': "safsa", 'form': form, 'group': group, 'account': account}
+    # if forms[0].is_valid() and forms[1].is_valid():
+    #     print('\n\n\n', forms[0].cleaned_data, '\n\n\n\n')
+    #     print('\n\n\n', forms[1].cleaned_data, '\n\n\n\n')
+    context = {'title': 'Add record', 'forms': forms}
     return render(request, template_name, context)
