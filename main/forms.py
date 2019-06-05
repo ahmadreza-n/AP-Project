@@ -42,3 +42,9 @@ class AddMemberForm(forms.Form):
 
 class ConsumerForm(forms.Form):
     sahm = forms.CharField(max_length=20, label=' fucker')
+
+class RecordForm(forms.Form):
+    title = forms.CharField(max_length=20)
+    # payer_id = forms.CharField(max_length=20)
+    cost = forms.IntegerField()
+    # date = forms.DateField(max_length=20)

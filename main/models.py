@@ -20,7 +20,7 @@ class Account(models.Model):
 class Group(models.Model):
     group_id = models.SlugField(max_length=20, unique=True)
     group_name = models.CharField(max_length=20)
-    admin = models.ForeignKey(Account, to_field='account_id', on_delete=models.CASCADE, null=True)
+    admin_fk = models.ForeignKey(Account, to_field='account_id', on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.group_id
@@ -29,9 +29,25 @@ class Group(models.Model):
         return f"/{self.group_id}"
 
 
-class GroupMember(models.Model):
-    group = models.ForeignKey(Group, to_field='group_id', on_delete=models.CASCADE)
-    member = models.ForeignKey(Account, to_field='account_id', on_delete=models.CASCADE)
+class Record(models.Model):
+    group_fk = models.ForeignKey(Group, on_delete=models.CASCADE)
+    account_fk = models.ForeignKey(Account, on_delete=models.CASCADE)
+    # payer_fk = models.ForeignKey(Account, on_delete=models.CASCADE)
+    # coefficient_fk = models.ForeignKey(Coefficient, on_delete=models.CASCADE)
+    title = models.CharField(max_length=20)
+    cost = models.IntegerField()
+    # date = models.TimeField()
 
     def __str__(self):
-        return str(self.member) + ' is in: ' + str(self.group)
+        return self.title
+
+    def get_absolute_url(self):
+        return f"/{self.title}"
+
+
+class GroupMember(models.Model):
+    group_fk = models.ForeignKey(Group, to_field='group_id', on_delete=models.CASCADE)
+    member_fk = models.ForeignKey(Account, to_field='account_id', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.member_fk) + ' is in: ' + str(self.group_fk)

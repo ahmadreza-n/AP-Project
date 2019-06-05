@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect
 
 
 from .forms import (AccountModelForm, AccountForm,
-                    GroupForm, ContactForm, AddMemberForm, ConsumerForm)
-from .models import Account, Group, GroupMember
+                    GroupForm, ContactForm, AddMemberForm, ConsumerForm,
+                    RecordForm)
+from .models import Account, Group, GroupMember, Record
 
 
 def home_page(request):
@@ -37,7 +38,7 @@ def sign_up_view(request):
 
 def account_view(request, account_id):
     account = Account.objects.get(account_id=account_id)
-    groups = GroupMember.objects.filter(member=account)
+    groups = GroupMember.objects.filter(member_fk=account)
     context = {"title": "Account Detail",
                'account': account, 'groups': groups}
     template_name = 'account.html'
@@ -85,9 +86,9 @@ def add_group_view(request, account_id):
         try:
             group_id = form.data['group_id']
             group_name = form.data['group_name']
-            group = Group(group_id=group_id, group_name=group_name, admin=account)
+            group = Group(group_id=group_id, group_name=group_name, admin_fk=account)
             group.save()
-            GroupMember(group=group, member=account).save()
+            GroupMember(group_fk=group, member_fk=account).save()
             return redirect(group_view, account_id=account_id, group_id=group_id)
         except Exception as exception:
             print(exception)
@@ -106,7 +107,7 @@ def group_view(request, account_id, group_id):
             member_id = form.data['member_id']
             group = Group.objects.get(group_id=group_id)
             member = Account.objects.get(account_id=member_id)
-            group_member = GroupMember(group=group, member=member)
+            group_member = GroupMember(group_fk=group, member_fk=member)
             group_member.save()
             return redirect(group_view,
                             account_id=account_id,
@@ -118,23 +119,48 @@ def group_view(request, account_id, group_id):
     template_name = 'group.html'
     group = Group.objects.get(group_id=group_id)
     account = Account.objects.get(account_id=account_id)
-    members = GroupMember.objects.filter(group_id=group_id)
+    members = GroupMember.objects.filter(group_fk=group)
+    records = Record.objects.filter(group_fk=group)
     context = {'title': title, 'form': form,
-                'group': group, 'members': members, 'account': account}
+                'group': group, 'members': members, 'account': account,
+                'records' : records}
     return render(request, template_name, context)
 
 
 def add_record_view(request, account_id, group_id):
-    names_list = []
-    if request.method == 'POST':
-        for key, value in request.POST.lists():
-            if key == 'sahm':
-                names_list = value
-        print(names_list)
-    forms = [ConsumerForm(None), ConsumerForm(None)]
+    # names_list = []
+    # if request.method == 'POST':
+    #     for key, value in request.POST.lists():
+    #         if key == 'sahm':
+    #             names_list = value
+    #     print(names_list)
+    # forms = [ConsumerForm(None), ConsumerForm(None)]
+    # template_name = 'add-record.html'
+    # # if forms[0].is_valid() and forms[1].is_valid():
+    # #     print('\n\n\n', forms[0].cleaned_data, '\n\n\n\n')
+    # #     print('\n\n\n', forms[1].cleaned_data, '\n\n\n\n')
+    # context = {'title': 'Add record', 'forms': forms}
+    # return render(request, template_name, context)
+    account = Account.objects.get(account_id=account_id)
+    group = Group.objects.get(group_id=group_id)
+    form = RecordForm(request.POST or None)
+    if form.is_valid():
+        try:
+            title = form.data['title']
+            # payer_id = form.data['payer']
+            # payer = Account.objects.get(account_id=payer_id)
+            cost = form.data['cost']
+            # date = form.data['date']
+            record = Record(group_fk=group, account_fk=account,
+                            title=title, cost=cost)
+            record.save()
+            return redirect(group_view, account_id=account_id, group_id=group_id)
+        except Exception as exception:
+            print(exception)
+            title = "Add New Record Error"
+    else:
+        title = "Add New Record"
     template_name = 'add-record.html'
-    # if forms[0].is_valid() and forms[1].is_valid():
-    #     print('\n\n\n', forms[0].cleaned_data, '\n\n\n\n')
-    #     print('\n\n\n', forms[1].cleaned_data, '\n\n\n\n')
-    context = {'title': 'Add record', 'forms': forms}
+    context = {'form': form, 'title': title, 'account': account}
     return render(request, template_name, context)
+

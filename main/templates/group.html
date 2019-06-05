@@ -10,21 +10,38 @@
         <div class='card-body'>
             <p class='card-title'>Group id: {{ group.group_id }}</p>
             <p class='card-title'>Group name: {{ group.group_name }}</p>
-            <p class='card-title'>Group admin: {{ group.admin.account_id}}</p>
+            <p class='card-title'>Group admin: {{ group.admin_fk.account_id}}</p>
         </div>
     </div>
 </div>
+
+<h3>Group Members:</h3>
 {% for member in members %}
 <ul class="list-group">
     <li class="list-group-item">
-        Member id: {{ member.member.account_id }}
+        Member id: {{ member.member_fk.account_id }}
         </br>
-        Member name: {{ member.member.first_name }} {{ member.member.last_name }}
+        Member name: {{ member.member_fk.first_name }} {{ member.member_fk.last_name }}
+    </li>
+</ul>
+{% endfor %}
+
+<h3>Group Records:</h3>
+{% for record in records %}
+<ul class="list-group">
+    <li class="list-group-item">
+        Title: {{ record.title }}
+        </br>
+        Cost: {{ record.cost }}  Tomans
+        </br>
+        Added By: {{ record.account_fk.first_name }}
     </li>
 </ul>
 {% endfor %}
 <a class="btn btn-primary" href="{{ account.get_absolute_url }}{{ group.get_absolute_url }}/add-record" role="button">Add Record</a>
 
+<br>
+<br>
 <form method='POST' action='' enctype='multipart/form-data'> {% csrf_token %}
     {{ form.as_p }}
     <button type='submit'>Add Member</button>

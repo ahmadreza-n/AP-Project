@@ -18,13 +18,13 @@
 
 {% for group in groups %}
 <ul class="list-group">
-    <a href="{{ account.get_absolute_url }}{{ group.group.get_absolute_url }}">
+    <a href="{{ account.get_absolute_url }}{{ group.group_fk.get_absolute_url }}">
         <li class="list-group-item">
-            Groupe id: {{ group.group.group_id }}
+            Groupe id: {{ group.group_fk.group_id }}
             </br>
-            Group name: {{ group.group.group_name }}
+            Group name: {{ group.group_fk.group_name }}
             </br>
-            Group admin: {{ group.group.admin.account_id }}
+            Group admin: {{ group.group_fk.admin_fk.account_id }}
         </li>
     </a>
 </ul>
