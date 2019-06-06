@@ -2,9 +2,10 @@ from django.shortcuts import render, redirect
 
 
 from .forms import (AccountModelForm, AccountForm,
-                    GroupForm, ContactForm, AddMemberForm, ConsumerForm,
-                    RecordForm)
+                    GroupForm, ContactForm, AddMemberForm,
+                    RecordForm, CoefficientsForm)
 from .models import Account, Group, GroupMember, Record
+# from django.utils import timezone
 
 
 def home_page(request):
@@ -86,10 +87,12 @@ def add_group_view(request, account_id):
         try:
             group_id = form.data['group_id']
             group_name = form.data['group_name']
-            group = Group(group_id=group_id, group_name=group_name, admin_fk=account)
+            group = Group(group_id=group_id, group_name=group_name,
+                          admin_fk=account)
             group.save()
             GroupMember(group_fk=group, member_fk=account).save()
-            return redirect(group_view, account_id=account_id, group_id=group_id)
+            return redirect(group_view, account_id=account_id,
+                            group_id=group_id)
         except Exception as exception:
             print(exception)
             title = "Add New Group Error"
@@ -122,45 +125,48 @@ def group_view(request, account_id, group_id):
     members = GroupMember.objects.filter(group_fk=group)
     records = Record.objects.filter(group_fk=group)
     context = {'title': title, 'form': form,
-                'group': group, 'members': members, 'account': account,
-                'records' : records}
+               'group': group, 'members': members, 'account': account,
+               'records': records}
     return render(request, template_name, context)
 
 
 def add_record_view(request, account_id, group_id):
-    # names_list = []
-    # if request.method == 'POST':
-    #     for key, value in request.POST.lists():
-    #         if key == 'sahm':
-    #             names_list = value
-    #     print(names_list)
-    # forms = [ConsumerForm(None), ConsumerForm(None)]
-    # template_name = 'add-record.html'
-    # # if forms[0].is_valid() and forms[1].is_valid():
-    # #     print('\n\n\n', forms[0].cleaned_data, '\n\n\n\n')
-    # #     print('\n\n\n', forms[1].cleaned_data, '\n\n\n\n')
-    # context = {'title': 'Add record', 'forms': forms}
-    # return render(request, template_name, context)
+    names_list = []
     account = Account.objects.get(account_id=account_id)
     group = Group.objects.get(group_id=group_id)
+    group_members = GroupMember.objects.filter(group_fk=group)
     form = RecordForm(request.POST or None)
+    coefficient_forms = []
+    members_first_name = []
+    for member in group_members:
+        members_first_name.append(member.member_fk.first_name)
+        coefficient_form = CoefficientsForm(None)
+        print(member.member_fk.first_name)
+        coefficient_form.label_suffix = member.member_fk.first_name
+        coefficient_forms.append(coefficient_form)
+    print(members_first_name)
     if form.is_valid():
         try:
+            for key, value in request.POST.lists():
+                if key == 'coefficient':
+                    names_list = value
             title = form.data['title']
-            # payer_id = form.data['payer']
-            # payer = Account.objects.get(account_id=payer_id)
+            print(names_list)
+            payer_id = form.data['payer_id']
+            payer = Account.objects.get(account_id=payer_id)
+            print(payer)
             cost = form.data['cost']
-            # date = form.data['date']
-            record = Record(group_fk=group, account_fk=account,
+            record = Record(group_fk=group, account_fk=account, payer_fk=payer,
                             title=title, cost=cost)
             record.save()
-            return redirect(group_view, account_id=account_id, group_id=group_id)
+            return redirect(group_view, account_id=account_id,
+                            group_id=group_id)
         except Exception as exception:
             print(exception)
             title = "Add New Record Error"
     else:
         title = "Add New Record"
     template_name = 'add-record.html'
-    context = {'form': form, 'title': title, 'account': account}
+    context = {'form': form, 'coefficient_forms': coefficient_forms,
+               'title': title, 'account': account}
     return render(request, template_name, context)
-

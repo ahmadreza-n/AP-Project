@@ -34,7 +34,11 @@
         </br>
         Cost: {{ record.cost }}  Tomans
         </br>
+        Paid By: {{ record.payer_fk.first_name }}
+        </br>
         Added By: {{ record.account_fk.first_name }}
+        </br>
+        Added At: {{ record.date_time }}
     </li>
 </ul>
 {% endfor %}

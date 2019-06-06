@@ -8,13 +8,12 @@
 
 <form method='POST' action=""> {% csrf_token %}
     {{ form.as_p }}
+
+    {% for form in coefficient_forms %}
+    {{ form.as_p }}
+    {% endfor %}
+    
     <button type='submit'>Add Record</button>
 </form>
 
-<!-- <form method='POST' action=""> {% csrf_token %}
-    {% for form in forms %}
-    {{ form.as_p }}
-    {% endfor %}
-    <button type='submit'>Add</button>
-</form> -->
 {% endblock %}
