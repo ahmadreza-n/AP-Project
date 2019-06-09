@@ -1,5 +1,5 @@
 from django import forms
-from .models import Account, Group
+from .models import Account
 
 
 class ContactForm(forms.Form):
@@ -40,9 +40,8 @@ class AddMemberForm(forms.Form):
     member_id = forms.SlugField(max_length=20)
 
 
-class CoefficientsForm(forms.Form):
-    coefficient = forms.IntegerField(label='Coefficient of ')
-    # coefficient.label_suffix = 'ah'
+class RatioForm(forms.Form):
+    ratio = forms.IntegerField(label='Ratio of ')
 
 
 class RecordForm(forms.Form):

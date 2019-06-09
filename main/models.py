@@ -20,7 +20,7 @@ class Account(models.Model):
 class Group(models.Model):
     group_id = models.SlugField(max_length=20, unique=True)
     group_name = models.CharField(max_length=20)
-    admin_fk = models.ForeignKey(Account, to_field='account_id', on_delete=models.CASCADE, null=True)
+    admin_fk = models.ForeignKey(Account, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.group_id
@@ -34,8 +34,7 @@ class Record(models.Model):
     account_fk = models.ForeignKey(Account, on_delete=models.CASCADE,
                                    related_name='account_fk_name')
     payer_fk = models.ForeignKey(Account, on_delete=models.CASCADE,
-                                 related_name='payer_fk_name', null=True)
-    # coefficient_fk = models.ForeignKey(Coefficient, on_delete=models.CASCADE)
+                                 related_name='payer_fk_name')
     title = models.CharField(max_length=20)
     cost = models.IntegerField()
     date_time = models.DateTimeField(auto_now=True, null=True)
@@ -48,10 +47,20 @@ class Record(models.Model):
 
 
 class GroupMember(models.Model):
-    group_fk = models.ForeignKey(Group, to_field='group_id',
-                                 on_delete=models.CASCADE)
-    member_fk = models.ForeignKey(Account, to_field='account_id',
-                                  on_delete=models.CASCADE)
+    group_fk = models.ForeignKey(Group, on_delete=models.CASCADE)
+    member_fk = models.ForeignKey(Account, on_delete=models.CASCADE)
+    balance = models.IntegerField(default=0)
 
     def __str__(self):
-        return str(self.member_fk) + ' is in: ' + str(self.group_fk)
+        return f'{self.member_fk.account_id} is in {self.group_fk.group_name}'
+
+
+class RecordRatio(models.Model):
+    record_fk = models.ForeignKey(Record, on_delete=models.CASCADE)
+    member_fk = models.ForeignKey(Account, on_delete=models.CASCADE)
+    ratio = models.IntegerField()
+
+    def __str__(self):
+        s = f'"{self.member_fk.first_name}" used "{self.record_fk.title}"'
+        s += f' by ratio of "{self.ratio}"'
+        return s

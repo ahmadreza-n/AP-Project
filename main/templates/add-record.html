@@ -9,7 +9,7 @@
 <form method='POST' action=""> {% csrf_token %}
     {{ form.as_p }}
 
-    {% for form in coefficient_forms %}
+    {% for form in ratio_forms %}
     {{ form.as_p }}
     {% endfor %}
     

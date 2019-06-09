@@ -3,8 +3,8 @@ from django.shortcuts import render, redirect
 
 from .forms import (AccountModelForm, AccountForm,
                     GroupForm, ContactForm, AddMemberForm,
-                    RecordForm, CoefficientsForm)
-from .models import Account, Group, GroupMember, Record
+                    RecordForm, RatioForm)
+from .models import Account, Group, GroupMember, Record, RecordRatio
 # from django.utils import timezone
 
 
@@ -95,9 +95,9 @@ def add_group_view(request, account_id):
                             group_id=group_id)
         except Exception as exception:
             print(exception)
-            title = "Add New Group Error"
+            title = 'Add New Group Error'
     else:
-        title = "Add New Group"
+        title = 'Add New Group'
     template_name = 'add-group.html'
     context = {'form': form, 'title': title, 'account': account}
     return render(request, template_name, context)
@@ -131,42 +131,59 @@ def group_view(request, account_id, group_id):
 
 
 def add_record_view(request, account_id, group_id):
-    names_list = []
     account = Account.objects.get(account_id=account_id)
     group = Group.objects.get(group_id=group_id)
     group_members = GroupMember.objects.filter(group_fk=group)
     form = RecordForm(request.POST or None)
-    coefficient_forms = []
-    members_first_name = []
+    members = []
+    ratio_forms = []
     for member in group_members:
-        members_first_name.append(member.member_fk.first_name)
-        coefficient_form = CoefficientsForm(None)
-        print(member.member_fk.first_name)
-        coefficient_form.label_suffix = member.member_fk.first_name
-        coefficient_forms.append(coefficient_form)
-    print(members_first_name)
+        members.append(member.member_fk)
+        ratio_form = RatioForm(None)
+        ratio_form.label_suffix = member.member_fk.first_name
+        ratio_forms.append(ratio_form)
     if form.is_valid():
         try:
             for key, value in request.POST.lists():
-                if key == 'coefficient':
-                    names_list = value
+                if key == 'ratio':
+                    ratios = value
             title = form.data['title']
-            print(names_list)
             payer_id = form.data['payer_id']
             payer = Account.objects.get(account_id=payer_id)
-            print(payer)
             cost = form.data['cost']
             record = Record(group_fk=group, account_fk=account, payer_fk=payer,
                             title=title, cost=cost)
             record.save()
+            for i in range(len(members)):
+                record_ratio = RecordRatio(record_fk=record,
+                                           member_fk=members[i],
+                                           ratio=ratios[i])
+                group_members[i].balance -= int(cost) / len(members)
+                group_members[i].save()
+                record_ratio.save()
+            member_payer = group_members.get(member_fk=payer)
+            member_payer.balance += int(cost)
+            member_payer.save()
+
             return redirect(group_view, account_id=account_id,
                             group_id=group_id)
         except Exception as exception:
             print(exception)
-            title = "Add New Record Error"
+            title = 'Add New Record Error'
     else:
-        title = "Add New Record"
+        title = 'Add New Record'
     template_name = 'add-record.html'
-    context = {'form': form, 'coefficient_forms': coefficient_forms,
+    context = {'form': form, 'ratio_forms': ratio_forms,
                'title': title, 'account': account}
+    return render(request, template_name, context)
+
+
+def record_view(request, account_id, group_id, record_pk):
+    # account = Account.objects.get(account_id=account_id)
+    # group = Group.objects.get(group_id=group_id)
+    record = Record.objects.get(pk=record_pk)
+    ratioes = RecordRatio.objects.filter(record_fk=record)
+    context = {'title': 'Account Detail',
+               'record': record, 'ratioes': ratioes}
+    template_name = 'record.html'
     return render(request, template_name, context)

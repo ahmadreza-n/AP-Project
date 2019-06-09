@@ -22,26 +22,27 @@
         Member id: {{ member.member_fk.account_id }}
         </br>
         Member name: {{ member.member_fk.first_name }} {{ member.member_fk.last_name }}
+        </br>
+        Balance: {{ member.balance }}
     </li>
 </ul>
 {% endfor %}
 
 <h3>Group Records:</h3>
 {% for record in records %}
-<ul class="list-group">
-    <li class="list-group-item">
-        Title: {{ record.title }}
-        </br>
-        Cost: {{ record.cost }}  Tomans
-        </br>
-        Paid By: {{ record.payer_fk.first_name }}
-        </br>
-        Added By: {{ record.account_fk.first_name }}
-        </br>
-        Added At: {{ record.date_time }}
-    </li>
-</ul>
+<a href="{{ group.group_id }}/{{ record.pk }}">
+    <ul class="list-group">
+        <li class="list-group-item">
+            Title: {{ record.title }}
+            </br>
+            Cost: {{ record.cost }}  Tomans
+            </br>
+            Added At: {{ record.date_time }}
+        </li>
+    </ul>
+</a>
 {% endfor %}
+
 <a class="btn btn-primary" href="{{ account.get_absolute_url }}{{ group.get_absolute_url }}/add-record" role="button">Add Record</a>
 
 <br>
