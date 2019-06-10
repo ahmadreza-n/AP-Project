@@ -47,9 +47,12 @@
 
 <br>
 <br>
-<form method='POST' action='' enctype='multipart/form-data'> {% csrf_token %}
-    {{ form.as_p }}
-    <button type='submit'>Add Member</button>
-</form>
+
+{% if group.admin_fk == account %}
+    <form method='POST' action='' enctype='multipart/form-data'> {% csrf_token %}
+        {{ form.as_p }}
+        <button type='submit'>Add Member</button>
+    </form>
+{% endif %}
 
 {% endblock %}

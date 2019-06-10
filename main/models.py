@@ -58,7 +58,7 @@ class GroupMember(models.Model):
 class RecordRatio(models.Model):
     record_fk = models.ForeignKey(Record, on_delete=models.CASCADE)
     member_fk = models.ForeignKey(Account, on_delete=models.CASCADE)
-    ratio = models.IntegerField()
+    ratio = models.IntegerField(default=0)
 
     def __str__(self):
         s = f'"{self.member_fk.first_name}" used "{self.record_fk.title}"'

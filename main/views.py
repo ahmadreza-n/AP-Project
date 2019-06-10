@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 
-
+from . import func
 from .forms import (AccountModelForm, AccountForm,
                     GroupForm, ContactForm, AddMemberForm,
                     RecordForm, RatioForm)
@@ -9,13 +9,15 @@ from .models import Account, Group, GroupMember, Record, RecordRatio
 
 
 def home_page(request):
-    context = {"title": "Welcome to Splitter"}
-    return render(request, "home.html", context)
+    context = {'title': 'Welcome to Splitter'}
+    # group = Group.objects.get(group_id='dorm')
+    # func.update_group_balances(group)
+    return render(request, 'home.html', context)
 
 
 def about_page(request):
-    context = {"title": "About us"}
-    return render(request, "about.html", context)
+    context = {'title': 'About us'}
+    return render(request, 'about.html', context)
 
 
 def contact_page(request):
@@ -112,6 +114,9 @@ def group_view(request, account_id, group_id):
             member = Account.objects.get(account_id=member_id)
             group_member = GroupMember(group_fk=group, member_fk=member)
             group_member.save()
+            records = Record.objects.filter(group_fk=group)
+            for record in records:
+                RecordRatio.objects.create(record_fk=record, member_fk=member,)
             return redirect(group_view,
                             account_id=account_id,
                             group_id=group_id)
@@ -146,24 +151,19 @@ def add_record_view(request, account_id, group_id):
         try:
             for key, value in request.POST.lists():
                 if key == 'ratio':
-                    ratios = value
+                    ratioes = value
             title = form.data['title']
             payer_id = form.data['payer_id']
             payer = Account.objects.get(account_id=payer_id)
-            cost = form.data['cost']
-            record = Record(group_fk=group, account_fk=account, payer_fk=payer,
-                            title=title, cost=cost)
+            cost = int(form.data['cost'])
+            record = Record(group_fk=group, account_fk=account,
+                            payer_fk=payer, title=title, cost=cost)
             record.save()
             for i in range(len(members)):
-                record_ratio = RecordRatio(record_fk=record,
-                                           member_fk=members[i],
-                                           ratio=ratios[i])
-                group_members[i].balance -= int(cost) / len(members)
-                group_members[i].save()
-                record_ratio.save()
-            member_payer = group_members.get(member_fk=payer)
-            member_payer.balance += int(cost)
-            member_payer.save()
+                RecordRatio.objects.create(record_fk=record,
+                                            member_fk=members[i],
+                                            ratio=ratioes[i])
+            func.update_record_balances(record)
 
             return redirect(group_view, account_id=account_id,
                             group_id=group_id)
