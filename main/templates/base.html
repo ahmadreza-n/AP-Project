@@ -1,25 +1,27 @@
+{% load static %}
 <!doctype html>
 <html lang="en">
 
 <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
-    <title>Splitter {% block head_title %}{% endblock %} </title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+    {% block style %}
+    {% endblock %}
+    <title>Splitter {% block head_title %}{% endblock %}</title>
 </head>
 
 <body>
-    {% include 'navbar.html' %}
-    <div class='container-fluid'>
-        {% block content %}
+    <header>
+        {% block navbar %}
         {% endblock %}
-    </div>
-
+    </header>
+    <main role="main" class='container'>
+        <div class="jumbotron">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
     {% include 'js.html' %}
 </body>
 

@@ -23,7 +23,7 @@ def update_record_balances(record):
                                                   member_fk=record.payer_fk)
     member_payer.balance += cost
     member_payer.save()
-    group_members = models.GroupMember.objects.filter(group_fk=group)
+    # group_members = models.GroupMember.objects.filter(group_fk=group)
     for group_member in group_members:
         ratio = int(record_ratioes.get(member_fk=group_member.member_fk).ratio)
         group_member = models.GroupMember.objects.get(group_fk=group,
