@@ -6,35 +6,44 @@
 
 {% endblock %}
 
-{% if title %}
-<h1>{{ title }}</h1>
-{% endif %}
+
+{% block head_title %}
+
+{% if title %}{{ title }}{% endif %}
+
+{% endblock %}
+
 
 {% block content %}
-<div class='col-12 col-md-10 mb-3 mx-auto'>
-    <div class='card'>
-        <div class='card-body'>
-            <p class='card-title'>{{ account.first_name }}</p>
-            <p class='card-title'>{{ account.last_name }}</p>
-            <p class='card-text'>{{ account.account_id }}</p>
-            <p class='card-text'>{{ account.description }}</p>
+
+<div class="row">
+    <div class="card col-md-4 offset-md-4 col-12">
+        <div class="card-body">
+            <b>Hello {{ account.first_name }}</b>
         </div>
     </div>
 </div>
 
-{% for group in groups %}
-<ul class="list-group">
-    <a href="{{ account.get_absolute_url }}{{ group.group_fk.get_absolute_url }}">
-        <li class="list-group-item">
-            Groupe id: {{ group.group_fk.group_id }}
-            </br>
-            Group name: {{ group.group_fk.group_name }}
-            </br>
-            Group admin: {{ group.group_fk.admin_fk.account_id }}
-        </li>
-    </a>
-</ul>
-{% endfor %}
 
-<a class="btn btn-primary" href="{{ account.get_add_url }}" role="button">Add Group</a>
+<div class="row">
+
+    <div class="card col-md-4 offset-md-4 col-12">
+        <div class="card-header">
+            Your Groups
+        </div>
+        <div class="card-body">
+            <div class="list-group">
+                {% for group in groups %}
+                <a href="{{ account.get_absolute_url }}{{ group.group_fk.get_absolute_url }}"
+                    class="list-group-item list-group-item-action list-group-item-primary">{{ group.group_fk.group_name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="row">
+    <a class="btn btn-primary col-md-2 offset-md-5 col-8 offset-2" href="{{ account.get_add_url }}" role="button">Add
+        Group</a>
+</div>
 {% endblock %}

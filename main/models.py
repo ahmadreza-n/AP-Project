@@ -64,3 +64,12 @@ class RecordRatio(models.Model):
         s = f'"{self.member_fk.first_name}" used "{self.record_fk.title}"'
         s += f' by ratio of "{self.ratio}"'
         return s
+
+
+# class MemberMember(models.Model):
+#     group_fk = models.ForeignKey(Group, on_delete=models.CASCADE)
+#     member1_fk = models.ForeignKey(
+#         Group, on_delete=models.CASCADE, related_name='member1')
+#     member2_fk = models.ForeignKey(
+#         Group, on_delete=models.CASCADE, related_name='member2')
+#     hesab = models.IntegerField(default=0)
