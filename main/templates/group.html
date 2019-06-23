@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load static %}
+
 {% block head_title %}
 {% if title %}{{ title }}{% endif %}
 {% endblock %}
@@ -19,18 +21,17 @@
     </div>
 </div>
 
-<h3>Group Members:</h3>
-{% for member in members %}
-<ul class="list-group">
-    <li class="list-group-item">
-        Member id: {{ member.member_fk.account_id }}
-        </br>
-        Member name: {{ member.member_fk.first_name }} {{ member.member_fk.last_name }}
-        </br>
-        Balance: {{ member.balance }}
-    </li>
-</ul>
-{% endfor %}
+<div class="row justify-content-center">
+    {% for member in members %}
+    <div class="col col-sm-6 col-lg-3">
+        <img class="rounded-circle" src="{% static 'img/test.jpeg' %}" width="180" height="180">
+        </img>
+        <h2 style="padding-left: 10%;">{{ member.member_fk.first_name }}</h2>
+        <p style="padding-left: 10%;">Balance: {{ member.balance }}</p>
+        <p style="padding-left: 10%;"><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+    </div>
+    {% endfor %}
+</div>
 
 <h3>Group Records:</h3>
 {% for record in records %}
