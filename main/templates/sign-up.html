@@ -34,15 +34,15 @@
     <h1 class="h3 mb-3 font-weight-normal">Please sign up</h1>
     <form class="form-signin" method="POST" action="/sign-up"> {% csrf_token %}
         <label for="id_first_name" class="sr-only">First Name</label>
-        <input name="first_name" type="text" id="id_first_name" class="form-control" aria-describedby="emailHelp" placeholder="First Name" required
+        <input name="first_name" type="text" id="id_first_name" class="form-control" placeholder="First Name" required
             autofocus>
-        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-        <label for="id_last_name" class="sr-only">Last Name</label>
-        <input name="last_name" type="text" id="id_last_name" class="form-control" placeholder="Last Name" required>
-        <label for="id_account_id" class="sr-only">Username</label>
-        <input name="account_id" type="text" id="id_account_id" class="form-control" placeholder="Username" required>
-        <label for="id_password" class="sr-only">Password</label>
-        <input name="password" type="password" id="id_password" class="form-control" placeholder="Password" required>
+            <label for="id_last_name" class="sr-only">Last Name</label>
+            <input name="last_name" type="text" id="id_last_name" class="form-control" placeholder="Last Name" required>
+            <label for="id_account_id" class="sr-only">Username</label>
+            <input name="account_id" type="text" id="id_account_id" class="form-control" placeholder="Username" required>
+            <label for="id_password" class="sr-only">Password</label>
+            <input name="password" type="password" id="id_password" class="form-control" placeholder="Password" aria-describedby="help" required>
+            <small id="help" class="form-text text-muted">We'll never share your data with anyone else.</small>
         <div class="checkbox mb-3">
             <label>
                 <input type="checkbox" value="remember-me"> Remember me

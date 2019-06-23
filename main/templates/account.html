@@ -17,7 +17,7 @@
 {% block content %}
 
 <div class="row">
-    <div class="card col-md-4 offset-md-4 col-12">
+    <div class="card col-12 col-sm-6 offset-sm-3 col-md-4 offset-md-4">
         <div class="card-body">
             <b>Hello {{ account.first_name }}</b>
         </div>
@@ -27,7 +27,7 @@
 
 <div class="row">
 
-    <div class="card col-md-4 offset-md-4 col-12">
+    <div class="card col-12 col-sm-6 offset-sm-3 col-md-4 offset-md-4">
         <div class="card-header">
             Your Groups
         </div>
@@ -42,6 +42,7 @@
     </div>
 
 </div>
+</br>
 <div class="row">
     <a class="btn btn-primary col-md-2 offset-md-5 col-8 offset-2" href="{{ account.get_add_url }}" role="button">Add
         Group</a>
