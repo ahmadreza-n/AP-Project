@@ -22,14 +22,10 @@
 {% endblock %}
 
 {% block head_title %}
-{% if title %}
-{{ title }}
-{% endif %}
+{% if title %}{{ title }}{% endif %}
 {% endblock %}
 
 {% block content %}
-</br>
-</br>
 <div class="text-center">
     <img class="mb-4" src="{% static 'img/bootstrap-solid.svg' %}" alt="LOGO" width="72" height="72">
     <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>

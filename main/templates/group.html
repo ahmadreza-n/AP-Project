@@ -1,14 +1,14 @@
 {% extends "base.html" %}
+
+{% block head_title %}
+{% if title %}{{ title }}{% endif %}
+{% endblock %}
+
 {% block navbar %}
-
 {% include 'navbar.html' %}
-
 {% endblock %}
 
 {% block content %}
-{% if title %}
-<h1>{{ title }}</h1>
-{% endif %}
 <div class='col-12 col-md-10 mb-3 mx-auto'>
     <div class='card'>
         <div class='card-body'>
@@ -39,7 +39,7 @@
         <li class="list-group-item">
             Title: {{ record.title }}
             </br>
-            Cost: {{ record.cost }}  Tomans
+            Cost: {{ record.cost }} Tomans
             </br>
             Added At: {{ record.date_time }}
         </li>
@@ -47,16 +47,17 @@
 </a>
 {% endfor %}
 
-<a class="btn btn-primary" href="{{ account.get_absolute_url }}{{ group.get_absolute_url }}/add-record" role="button">Add Record</a>
+<a class="btn btn-primary" href="{{ account.get_absolute_url }}{{ group.get_absolute_url }}/add-record"
+    role="button">Add Record</a>
 
 <br>
 <br>
 
 {% if group.admin_fk == account %}
-    <form method='POST' action='' enctype='multipart/form-data'> {% csrf_token %}
-        {{ form.as_p }}
-        <button type='submit'>Add Member</button>
-    </form>
+<form method='POST' action='' enctype='multipart/form-data'> {% csrf_token %}
+    {{ form.as_p }}
+    <button type='submit'>Add Member</button>
+</form>
 {% endif %}
 
 {% endblock %}

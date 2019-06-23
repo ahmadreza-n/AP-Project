@@ -1,15 +1,14 @@
 {% extends "base.html" %}
-{% block navbar %}
 
-{% include 'navbar.html' %}
-
+{% block head_title %}
+{% if title %}{{ title }}{% endif %}
 {% endblock %}
+
+{% block navbar %}
+{% include 'navbar.html' %}
+{% endblock %}
+
 {% block content %}
-
-{% if title %}
-<h1>{{ title }}</h1>
-{% endif %}
-
 <form method='POST' action=""> {% csrf_token %}
     {{ form.as_p }}
 
@@ -19,5 +18,4 @@
     
     <button type='submit'>Add Record</button>
 </form>
-
 {% endblock %}

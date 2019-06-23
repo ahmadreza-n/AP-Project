@@ -1,21 +1,16 @@
 {% extends "base.html" %}
 
-{% block navbar %}
-
-{% include 'navbar.html' %}
-
-{% endblock %}
-
+{% load static %}
 
 {% block head_title %}
-
 {% if title %}{{ title }}{% endif %}
-
 {% endblock %}
 
+{% block navbar %}
+{% include 'navbar.html' %}
+{% endblock %}
 
 {% block content %}
-
 <div class="row">
     <div class="card col-12 col-sm-6 offset-sm-3 col-md-4 offset-md-4">
         <div class="card-body">
@@ -24,23 +19,21 @@
     </div>
 </div>
 
-
 <div class="row">
 
-    <div class="card col-12 col-sm-6 offset-sm-3 col-md-4 offset-md-4">
-        <div class="card-header">
-            Your Groups
-        </div>
+
+    {% for group in groups %}
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+    <div class="card" style="">
+        <img src="{% static 'img/test.jpeg' %}" class="card-img-top" alt="img">
         <div class="card-body">
-            <div class="list-group">
-                {% for group in groups %}
-                <a href="{{ account.get_absolute_url }}{{ group.group_fk.get_absolute_url }}"
-                    class="list-group-item list-group-item-action list-group-item-primary">{{ group.group_fk.group_name }}</a>
-                {% endfor %}
-            </div>
+          <h5 class="card-title">{{ group.group_fk.group_name }}</h5>
+          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+          <a href="{{ account.get_absolute_url }}{{ group.group_fk.get_absolute_url }}" class="btn btn-primary">Go somewhere</a>
         </div>
     </div>
-
+</div>
+    {% endfor %}
 </div>
 </br>
 <div class="row">

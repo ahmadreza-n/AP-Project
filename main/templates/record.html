@@ -1,34 +1,32 @@
 {% extends "base.html" %}
-{% block navbar %}
 
-{% include 'navbar.html' %}
-
+{% block head_title %}
+{% if title %}{{ title }}{% endif %}
 {% endblock %}
-{% if title %}
-<h1>{{ title }}</h1>
-{% endif %}
+
+{% block navbar %}
+{% include 'navbar.html' %}
+{% endblock %}
 
 {% block content %}
-
-    <ul class="list-group">
-        <li class="list-group-item">
-            Title: {{ record.title }}
-            </br>
-            Cost: {{ record.cost }}  Tomans
-            </br>
-            Paid By: {{ record.payer_fk.first_name }}
-            </br>
-            Added By: {{ record.account_fk.first_name }}
-            </br>
-            Added At: {{ record.date_time }}
-            <br>
-        </li>
-        <li class="list-group-item">
-            {% for record_ratio in ratioes %}
-            {{ record_ratio.member_fk.first_name }} used by ratio of: {{ record_ratio.ratio }}
-            </br>
-            {% endfor %}
-        </li>
-    </ul>
-
+<ul class="list-group">
+    <li class="list-group-item">
+        Title: {{ record.title }}
+        </br>
+        Cost: {{ record.cost }} Tomans
+        </br>
+        Paid By: {{ record.payer_fk.first_name }}
+        </br>
+        Added By: {{ record.account_fk.first_name }}
+        </br>
+        Added At: {{ record.date_time }}
+        <br>
+    </li>
+    <li class="list-group-item">
+        {% for record_ratio in ratioes %}
+        {{ record_ratio.member_fk.first_name }} used by ratio of: {{ record_ratio.ratio }}
+        </br>
+        {% endfor %}
+    </li>
+</ul>
 {% endblock %}

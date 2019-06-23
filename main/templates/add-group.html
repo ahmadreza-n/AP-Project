@@ -1,18 +1,14 @@
 {% extends "base.html" %}
-{% block navbar %}
-
-{% include 'navbar.html' %}
-
-{% endblock %}
 
 {% block head_title %}
-{% if title %}
-{{ title }}
-{% endif %}
+{% if title %}{{ title }}{% endif %}
+{% endblock %}
+
+{% block navbar %}
+{% include 'navbar.html' %}
 {% endblock %}
 
 {% block content %}
-</br>
 <div class="row">
     <div class="col-md-3 col-12">
         <form method='POST' action="{{ account.get_add_url }}"> {% csrf_token %}
