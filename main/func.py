@@ -40,7 +40,6 @@ def update_record_mm_balances(record):
     for group_member in group_members:
         balances[group_member.member_fk.account_id] = group_member.balance
     print(balances)
-    # balances = {'assef': +12, 'mamraz': +21, 'sajjad': -20, 'saleh': -5, 'unes': -8}
     pays = []
     while True:
         most_positive = max(balances, key=lambda k: balances[k])
@@ -61,8 +60,9 @@ def update_record_mm_balances(record):
     temps = models.Pays.objects.filter(group_fk=group)
     for temp in temps:
         temp.delete()
+        
     for pay in pays:
-        member1_fk = models.Account.objects.get(account_id=pay[0])
-        member2_fk = models.Account.objects.get(account_id=pay[2])
-        models.Pays.objects.create(group_fk=group, member1_fk=member1_fk,
-                                   member2_fk=member2_fk, mm_balance=pay[1])
+        debtor_fk = models.Account.objects.get(account_id=pay[0])
+        creditor_fk = models.Account.objects.get(account_id=pay[2])
+        models.Pays.objects.create(group_fk=group, debtor_fk=debtor_fk,
+                                   creditor_fk=creditor_fk, amount=pay[1])

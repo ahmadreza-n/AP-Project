@@ -28,7 +28,33 @@
         </img>
         <h2 style="padding-left: 10%;">{{ member.member_fk.first_name }}</h2>
         <p style="padding-left: 10%;">Balance: {{ member.balance }}</p>
-        <p style="padding-left: 10%;"><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+        <p style="padding-left: 10%;">
+            <button class="btn btn-primary" type="button" data-toggle="collapse"
+                data-target="#{{ member.member_fk.first_name }}" aria-expanded="false"
+                aria-controls="{{ member.member_fk.first_name }}">
+                View details &raquo;
+            </button>
+        </p>
+        <div class="collapse" id="{{ member.member_fk.first_name }}">
+            <div class="card card-body">
+                {% if member.balance > 0 %}
+                Credits:
+                {% else %}
+                Debts:
+                {% endif %}
+                {% for key, value in details.items %}
+                {% if key == member.member_fk.account_id %}
+                {% for key2, value2 in value.items %}
+                {% if member.balance > 0 %}
+                <p>{{ value2 }} from {{ key2 }}</p>
+                {% else %}
+                <p>{{ value2 }} to {{ key2 }}</p>
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
     </div>
     {% endfor %}
 </div>
@@ -61,4 +87,12 @@
 </form>
 {% endif %}
 
+{% endblock %}
+
+{% block js %}
+<script>
+    $('.popover-dismiss').popover({
+        trigger: 'focus'
+    })
+</script>
 {% endblock %}

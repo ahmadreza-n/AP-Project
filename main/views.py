@@ -4,7 +4,7 @@ from . import func
 from .forms import (AccountModelForm, AccountForm,
                     GroupForm, ContactForm, AddMemberForm,
                     RecordForm, RatioForm)
-from .models import Account, Group, GroupMember, Record, RecordRatio
+from .models import Account, Group, GroupMember, Record, RecordRatio, Pays
 # from django.utils import timezone
 
 
@@ -129,9 +129,23 @@ def group_view(request, account_id, group_id):
     account = Account.objects.get(account_id=account_id)
     members = GroupMember.objects.filter(group_fk=group)
     records = Record.objects.filter(group_fk=group)
+    
+    pays = Pays.objects.filter(group_fk=group)
+    
+    details = {}
+    for member in members:
+        temp = {}
+        for pay in pays:
+            if pay.debtor_fk == member.member_fk:
+                temp[pay.creditor_fk.account_id] = pay.amount
+            elif pay.creditor_fk == member.member_fk:
+                temp[pay.debtor_fk.account_id] = pay.amount
+        details[member.member_fk.account_id] = temp
+
+    print(details)
     context = {'title': title, 'form': form,
                'group': group, 'members': members, 'account': account,
-               'records': records}
+               'records': records, 'details': details}
     return render(request, template_name, context)
 
 
@@ -164,6 +178,7 @@ def add_record_view(request, account_id, group_id):
                                             member_fk=members[i],
                                             ratio=ratioes[i])
             func.update_record_balances(record)
+            func.update_record_mm_balances(record)
 
             return redirect(group_view, account_id=account_id,
                             group_id=group_id)
