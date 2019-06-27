@@ -87,8 +87,10 @@
     <button type='submit'>Add Member</button>
 </form>
 
-<a class="btn btn-primary" href="{{ account.get_absolute_url }}{{ group.get_absolute_url }}/delete_group"
+<a class="btn btn-primary" href="{{ account.get_absolute_url }}{{ group.get_absolute_url }}/delete-group"
     role="button">Delete Group</a>
+    <a class="btn btn-primary" href="{{ account.get_absolute_url }}{{ group.get_absolute_url }}/edit-group"
+    role="button">Edit Group</a>
 
 {% endif %}
 

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Account
+from .models import Account, Group
 
 
 class ContactForm(forms.Form):
@@ -34,6 +34,17 @@ class AccountForm(forms.Form):
 class GroupForm(forms.Form):
     group_id = forms.SlugField(max_length=20)
     group_name = forms.CharField(max_length=20)
+
+
+class EditGroupModelForm(forms.ModelForm):  # must be deleted
+    # group_id = forms.SlugField(max_length=20)
+    # group_name = forms.CharField(max_length=20)
+
+    class Meta:
+        model = Group
+        fields = ['group_name']
+        # exclude = ['group_id']
+        # fields = ['group_name']
 
 
 class AddMemberForm(forms.Form):

@@ -17,7 +17,9 @@ urlpatterns = [
      path('<slug:account_id>/<slug:group_id>', views.group_view),
      path('<slug:account_id>/<slug:group_id>/add-record',
           views.add_record_view),
-     path('<slug:account_id>/<slug:group_id>/delete_group',
+     path('<slug:account_id>/<slug:group_id>/delete-group',
           views.delete_group_view),
+     path('<slug:account_id>/<slug:group_id>/edit-group',
+          views.edit_group_view),
      path('<slug:account_id>/<slug:group_id>/<int:record_pk>',
           views.record_view)]

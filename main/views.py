@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from . import func
 from .forms import (AccountModelForm, AccountForm,
                     GroupForm, ContactForm, AddMemberForm,
-                    RecordForm, RatioForm)
+                    RecordForm, RatioForm, EditGroupModelForm)
 from .models import Account, Group, GroupMember, Record, RecordRatio, Pays
 # from django.utils import timezone
 
@@ -105,6 +105,29 @@ def add_group_view(request, account_id):
     return render(request, template_name, context)
 
 
+def edit_group_view(request, account_id, group_id):
+    account = Account.objects.get(account_id=account_id)
+    group = Group.objects.get(group_id=group_id)
+    form = EditGroupModelForm(request.POST or None, instance=group)
+    if request.method == 'POST':
+        print('valid')
+        try:
+            group_name = form.data['group_name']
+            group.group_name = group_name
+            group.save()
+            return redirect(group_view, account_id=account_id,
+                            group_id=group_id)
+        except Exception as exception:
+            print(exception)
+            title = 'Edit Group Error'
+    else:
+        title = 'Edit Group'
+    template_name = 'edit-group.html'
+    print(group.group_name)
+    context = {'form': form, 'title': title, 'account': account, 'group': group}
+    return render(request, template_name, context)
+
+
 def delete_group_view(request, account_id, group_id):
     group = Group.objects.get(group_id=group_id)
     if request.method == 'POST':
@@ -156,7 +179,6 @@ def group_view(request, account_id, group_id):
                 temp[pay.debtor_fk.account_id] = pay.amount
         details[member.member_fk.account_id] = temp
 
-    print(details)
     context = {'title': title, 'form': form,
                'group': group, 'members': members, 'account': account,
                'records': records, 'details': details}

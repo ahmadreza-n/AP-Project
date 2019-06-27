@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block head_title %}
+{% if title %}{{ title }}{% endif %}
+{% endblock %}
+
+{% block navbar %}
+{% include 'navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3 col-12">
+        <form method='POST' action="./edit-group"> {% csrf_token %}
+            <div class="form-group">
+                <label for="id_group_name" class="sr-only">{{ group.group_name }}</label>
+                <input name="group_name" type="text" id="id_group_name" class="form-control" placeholder="{{ group.group_name }}" required
+                    autofocus>
+            </div>
+            <button type="submit" class="btn btn-primary">Edit</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
