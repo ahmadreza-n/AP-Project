@@ -29,6 +29,11 @@
         <h2 style="padding-left: 10%;">{{ member.member_fk.first_name }}</h2>
         <p style="padding-left: 10%;">Balance: {{ member.balance }}</p>
         <p style="padding-left: 10%;">
+            <a class="btn btn-primary" href="./{{group.group_id}}/settle/{{member.member_fk.account_id}}">
+                Settle
+            </a>
+        </p>
+        <p style="padding-left: 10%;">
             <button class="btn btn-primary" type="button" data-toggle="collapse"
                 data-target="#{{ member.member_fk.first_name }}" aria-expanded="false"
                 aria-controls="{{ member.member_fk.first_name }}">
@@ -61,17 +66,32 @@
 
 <h3>Group Records:</h3>
 {% for record in records %}
-<a href="{{ group.group_id }}/{{ record.pk }}">
-    <ul class="list-group">
-        <li class="list-group-item">
-            Title: {{ record.title }}
-            </br>
-            Cost: {{ record.cost }} Tomans
-            </br>
-            Added At: {{ record.date_time }}
-        </li>
-    </ul>
-</a>
+    {% if record.record_type == 'payment' %}
+        <a href="{{ group.group_id }}/{{ record.pk }}">
+            <ul class="list-group">
+                <li class="list-group-item bg-light text-dark">
+                    Title: {{ record.title }}
+                    </br>
+                    Cost: {{ record.cost }} Tomans
+                    </br>
+                    Added At: {{ record.date_time }}
+                </li>
+            </ul>
+        </a>
+    {% endif %}
+    {% if record.record_type == 'settle' %}
+        <a href="{{ group.group_id }}/{{ record.pk }}">
+            <ul class="list-group">
+                <li class="list-group-item bg-dark text-white">
+                    Title: {{ record.title }}
+                    </br>
+                    Cost: {{ record.cost }} Tomans
+                    </br>
+                    Added At: {{ record.date_time }}
+                </li>
+            </ul>
+        </a>
+    {% endif %}
 {% endfor %}
 
 <a class="btn btn-primary" href="{{ account.get_absolute_url }}{{ group.get_absolute_url }}/add-record"

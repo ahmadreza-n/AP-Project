@@ -30,6 +30,7 @@ class Group(models.Model):
 
 
 class Record(models.Model):
+    record_type = models.CharField(max_length=10, default='payment')
     group_fk = models.ForeignKey(Group, on_delete=models.CASCADE)
     account_fk = models.ForeignKey(Account, on_delete=models.CASCADE,
                                    related_name='account_fk_name')
@@ -66,13 +67,13 @@ class RecordRatio(models.Model):
         return s
 
 
-class Pays(models.Model):
+class Pay(models.Model):
     group_fk = models.ForeignKey(Group, on_delete=models.CASCADE)
     debtor_fk = models.ForeignKey(
-        Account, on_delete=models.CASCADE, related_name='member1')
+        Account, on_delete=models.CASCADE, related_name='member1') ## related name #########
     creditor_fk = models.ForeignKey(
-        Account, on_delete=models.CASCADE, related_name='member2')
-    amount = models.IntegerField(default=0)  # Member Member Balance
+        Account, on_delete=models.CASCADE, related_name='member2') ## 
+    amount = models.IntegerField(default=0)
 
     def __str__(self):
         string = f'{self.debtor_fk.account_id} '

@@ -4,7 +4,7 @@ from . import func
 from .forms import (AccountModelForm, AccountForm,
                     GroupForm, ContactForm, AddMemberForm,
                     RecordForm, RatioForm, EditGroupModelForm)
-from .models import Account, Group, GroupMember, Record, RecordRatio, Pays
+from .models import Account, Group, GroupMember, Record, RecordRatio, Pay
 # from django.utils import timezone
 
 
@@ -141,6 +141,22 @@ def delete_group_view(request, account_id, group_id):
     context = {'title': title}
     return render(request, template_name, context)
 
+def settle_view(request, account_id, group_id, settler_id):
+    account = Account.objects.get(account_id=account_id)
+    group = Group.objects.get(group_id=group_id)
+    settler = Account.objects.get(account_id=settler_id)
+
+    if request.method == 'POST':
+        if 'yes_sub' in request.POST:
+            func.settle(account, group, settler)
+            return redirect(group_view, account_id=account_id, group_id=group_id)
+        elif 'no_sub' in request.POST:
+            return redirect(group_view, account_id=account_id, group_id=group_id)
+    title = 'Settle Member'
+    template_name = 'settle.html'
+    context = {'title': title, 'settler': settler}
+    return render(request, template_name, context)
+
 
 def group_view(request, account_id, group_id):
     form = AddMemberForm(request.POST or None)
@@ -167,12 +183,12 @@ def group_view(request, account_id, group_id):
     members = GroupMember.objects.filter(group_fk=group)
     records = Record.objects.filter(group_fk=group)
     
-    pays = Pays.objects.filter(group_fk=group)
+    debts_or_credits = Pay.objects.filter(group_fk=group)
     
     details = {}
     for member in members:
         temp = {}
-        for pay in pays:
+        for pay in debts_or_credits:
             if pay.debtor_fk == member.member_fk:
                 temp[pay.creditor_fk.account_id] = pay.amount
             elif pay.creditor_fk == member.member_fk:
@@ -202,6 +218,7 @@ def add_record_view(request, account_id, group_id):
             for key, value in request.POST.lists():
                 if key == 'ratio':
                     ratioes = value
+            record_type = 'payment'
             title = form.data['title']
             payer_id = form.data['payer_id']
             payer = Account.objects.get(account_id=payer_id)

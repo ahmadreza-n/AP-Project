@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block head_title %}
+{% if title %}{{ title }}{% endif %}
+{% endblock %}
+
+{% block navbar %}
+{% include 'navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3 col-12">
+        <form method='POST' action="{{ settler.account_id }}"> {% csrf_token %}
+            <p>
+                Are you sure you want to settle this member: {{ settler.account_id }}?
+            </p>
+            <button type="submit" name="yes_sub" class="btn btn-primary">Yes</button>
+            <button type="submit" name="no_sub" class="btn btn-primary">No</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

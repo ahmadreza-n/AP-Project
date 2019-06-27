@@ -21,5 +21,7 @@ urlpatterns = [
           views.delete_group_view),
      path('<slug:account_id>/<slug:group_id>/edit-group',
           views.edit_group_view),
+     path('<slug:account_id>/<slug:group_id>/settle/<slug:settler_id>',
+          views.settle_view),
      path('<slug:account_id>/<slug:group_id>/<int:record_pk>',
           views.record_view)]

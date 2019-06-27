@@ -33,7 +33,7 @@ def update_record_balances(record):
         group_member.save()
 
 
-def update_record_mm_balances(record):
+def update_record_mm_balances(record): # record argument is redundant #######
     group = record.group_fk
     group_members = models.GroupMember.objects.filter(group_fk=group)
     balances = {}
@@ -41,7 +41,7 @@ def update_record_mm_balances(record):
         balances[group_member.member_fk.account_id] = group_member.balance
     print(balances)
     pays = []
-    while True:
+    for i in range(len(group_members)):
         most_positive = max(balances, key=lambda k: balances[k])
         most_negative = min(balances, key=lambda k: balances[k])
         pay_amount = 0
@@ -57,12 +57,44 @@ def update_record_mm_balances(record):
             balances[most_negative] = 0
         pays.append((most_negative, pay_amount, most_positive))
 
-    temps = models.Pays.objects.filter(group_fk=group)
+    temps = models.Pay.objects.filter(group_fk=group)
     for temp in temps:
         temp.delete()
-        
     for pay in pays:
         debtor_fk = models.Account.objects.get(account_id=pay[0])
         creditor_fk = models.Account.objects.get(account_id=pay[2])
-        models.Pays.objects.create(group_fk=group, debtor_fk=debtor_fk,
-                                   creditor_fk=creditor_fk, amount=pay[1])
+        models.Pay.objects.create(group_fk=group, debtor_fk=debtor_fk,
+                                  creditor_fk=creditor_fk, amount=pay[1])
+
+
+def settle(account, group, settler):
+    members = models.GroupMember.objects.filter(group_fk=group)
+    balance = models.GroupMember.objects.get(group_fk=group, member_fk=settler).balance
+    if balance > 0:
+        pays = models.Pay.objects.filter(group_fk=group, creditor_fk=settler)
+    else:
+        pays = models.Pay.objects.filter(group_fk=group, debtor_fk=settler)
+    for pay in pays:
+        record_type = 'settle'
+        title = settler.account_id
+        if balance > 0:
+            title += ' took back from '
+            title += pay.debtor_fk.account_id
+        else:
+            title += ' paid back to '
+            title += pay.creditor_fk.account_id
+        payer = pay.debtor_fk
+        cost = pay.amount
+        record = models.Record(record_type=record_type, group_fk=group,
+                               account_fk=account, payer_fk=payer,
+                               title=title, cost=cost)
+        record.save()
+        for i in range(len(members)):
+            ratio = 0
+            if members[i].member_fk == pay.creditor_fk:
+                ratio = 1
+            models.RecordRatio.objects.create(record_fk=record,
+                                       member_fk=members[i].member_fk,
+                                       ratio=ratio)
+        update_record_balances(record)
+        update_record_mm_balances(record)
