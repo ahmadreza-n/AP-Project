@@ -66,10 +66,13 @@ class RecordRatio(models.Model):
         return s
 
 
-# class MemberMember(models.Model):
-#     group_fk = models.ForeignKey(Group, on_delete=models.CASCADE)
-#     member1_fk = models.ForeignKey(
-#         Group, on_delete=models.CASCADE, related_name='member1')
-#     member2_fk = models.ForeignKey(
-#         Group, on_delete=models.CASCADE, related_name='member2')
-#     hesab = models.IntegerField(default=0)
+class Pays(models.Model):
+    group_fk = models.ForeignKey(Group, on_delete=models.CASCADE)
+    member1_fk = models.ForeignKey(
+        Account, on_delete=models.CASCADE, related_name='member1')
+    member2_fk = models.ForeignKey(
+        Account, on_delete=models.CASCADE, related_name='member2')
+    mm_balance = models.IntegerField(default=0) # Member Member Balance
+
+    def __str__(self):
+        return self.group_fk.__str__()
