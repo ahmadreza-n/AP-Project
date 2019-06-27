@@ -81,10 +81,15 @@
 <br>
 
 {% if group.admin_fk == account %}
+
 <form method='POST' action='' enctype='multipart/form-data'> {% csrf_token %}
     {{ form.as_p }}
     <button type='submit'>Add Member</button>
 </form>
+
+<a class="btn btn-primary" href="{{ account.get_absolute_url }}{{ group.get_absolute_url }}/delete_group"
+    role="button">Delete Group</a>
+
 {% endif %}
 
 {% endblock %}

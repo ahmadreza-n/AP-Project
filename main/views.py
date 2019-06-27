@@ -105,6 +105,20 @@ def add_group_view(request, account_id):
     return render(request, template_name, context)
 
 
+def delete_group_view(request, account_id, group_id):
+    group = Group.objects.get(group_id=group_id)
+    if request.method == 'POST':
+        if 'yes_sub' in request.POST:
+            group.delete()
+            return redirect(account_view, account_id=account_id)
+        elif 'no_sub' in request.POST:
+            return redirect(group_view, account_id=account_id, group_id=group_id)
+    title = 'Delete Group'
+    template_name = 'delete-group.html'
+    context = {'title': title}
+    return render(request, template_name, context)
+
+
 def group_view(request, account_id, group_id):
     form = AddMemberForm(request.POST or None)
     if form.is_valid():

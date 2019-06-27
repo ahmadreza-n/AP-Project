@@ -75,4 +75,8 @@ class Pays(models.Model):
     amount = models.IntegerField(default=0)  # Member Member Balance
 
     def __str__(self):
-        return self.group_fk.__str__()
+        string = f'{self.debtor_fk.account_id} '
+        string += f'owes {self.amount} '
+        string += f'to {self.creditor_fk.account_id} '
+        string += f'to {self.group_fk.group_id}'
+        return string
