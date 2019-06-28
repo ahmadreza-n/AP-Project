@@ -12,7 +12,7 @@
 
 {% block content %}
 <div class="jumbotron">
-    <h1 class="display-6">{{ profile_account.user.first_name }}'s Account</h1>
+    <h1 class="display-6">{{ profile_account.user.first_name }}'s Profile</h1>
 </div>
 
 <div class="row">
@@ -24,15 +24,9 @@
                 <h5 class="card-title">{{ group.group_fk.group_name }}</h5>
                 <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
                     card's content.</p>
-                <a href="{{ group.group_fk.get_absolute_url }}/veiw"
-                    class="btn btn-primary">View this group</a>
             </div>
         </div>
     </div>
     {% endfor %}
-</div>
-<div class="row justify-content-center">
-    <a class="btn btn-primary col col-10 col-sm-6 col-md-4 col-lg-3" href="{{ profile_account.get_add_url }}" role="button">Add
-        Group</a>
 </div>
 {% endblock %}

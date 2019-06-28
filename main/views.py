@@ -59,10 +59,18 @@ def register_view(request):
 @login_required
 def account_view(request, username):
     account = Account.objects.get(user=request.user)
-    groups = GroupMember.objects.filter(member_fk=account)
-    context = {"title": "Account Detail",
-               'account': account, 'groups': groups}
-    template_name = 'account.html'
+    profile_account = Account.objects.get(
+                user=User.objects.get(username=username))
+    groups = GroupMember.objects.filter(member_fk=profile_account)
+    if profile_account == account:
+        template_name = 'account.html'
+        title = 'Account Detail'
+    else:
+        template_name = 'profile.html'
+        title = 'Profile Detail'
+    context = {'title': title,
+               'account': account, 'groups': groups,
+               'profile_account': profile_account}
     return render(request, template_name, context)
 
 
@@ -82,7 +90,7 @@ def login_view(request):
         except Exception as exeption:
             print(exeption)
     else:
-        title = "Sign in"
+        title = "Login"
     context = {"title": title}
     template_name = 'login.html'
     return render(request, template_name, context)
