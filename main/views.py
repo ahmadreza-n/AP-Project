@@ -1,26 +1,38 @@
 from django.shortcuts import render, redirect
 
-from . import func
-from .forms import (AccountModelForm, AccountForm,
+from .func import (settle, update_group_balances,
+                   update_group_balance_details, update_expense_balances)
+
+from .forms import (UserForm,
                     GroupForm, ContactForm, AddMemberForm,
-                    RecordForm, RatioForm, EditGroupModelForm)
-from .models import Account, Group, GroupMember, Record, RecordRatio, Pay
+                    ExpenseForm, RatioForm, EditGroupModelForm)
+
+from .forms import UserForm, ContactForm
+
+from .models import (User, Account, Group, GroupMember, Expense,
+                     ExpenseRatio, BalanceDetail)
+
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 # from django.utils import timezone
 
 
-def home_page(request):
-    context = {'title': 'Welcome to Splitter'}
-    # group = Group.objects.get(group_id='dorm')
-    # func.update_group_balances(group)
-    return render(request, 'home.html', context)
+def home_view(request):
+    username = request.user.__str__()
+    if username == 'AnonymousUser':
+        context = {'title': 'Welcome to Splitter'}
+        return render(request, 'home.html', context)
+    else:
+        print('else')
+        return redirect(account_view, username=username)
 
 
-def about_page(request):
+def about_view(request):
     context = {'title': 'About us'}
     return render(request, 'about.html', context)
 
 
-def contact_page(request):
+def contact_view(request):
     form = ContactForm(request.POST or None)
     if form.is_valid():
         print(form.cleaned_data)
@@ -29,18 +41,24 @@ def contact_page(request):
     return render(request, "form.html", context)
 
 
-def sign_up_view(request):
-    form = AccountModelForm(request.POST or None)
+def register_view(request):
+    form = UserForm(request.POST or None)
     if form.is_valid():
-        form.save()
-        return redirect(account_view, account_id=form.data['account_id'])
-    template_name = 'sign-up.html'
-    context = {'form': form, 'title': 'SignUp'}
+        try:
+            user = form.save()
+            Account.objects.create(user=user)
+            login(request, user)
+            return redirect(account_view, username=user.get_username())
+        except Exception as exception:
+            print(exception)
+    template_name = 'register.html'
+    context = {'form': form, 'title': 'Register'}
     return render(request, template_name, context)
 
 
-def account_view(request, account_id):
-    account = Account.objects.get(account_id=account_id)
+@login_required
+def account_view(request, username):
+    account = Account.objects.get(user=request.user)
     groups = GroupMember.objects.filter(member_fk=account)
     context = {"title": "Account Detail",
                'account': account, 'groups': groups}
@@ -48,52 +66,53 @@ def account_view(request, account_id):
     return render(request, template_name, context)
 
 
-def sign_in_view(request):
-    form = AccountForm(request.POST or None)
-    if form.is_valid():
+def login_view(request):
+    title = None
+    if request.method == 'POST':
         try:
-            account_id = form.data['account_id']
-            password = form.data['password']
-            accounts = Account.objects.filter(account_id=account_id,
-                                              password=password)
-            if len(accounts) == 1:
-                return redirect(account_view, account_id=account_id)
-            else:
-                title = "Invalid data"
+            username = request.POST['username']
+            password = request.POST['password']
+            user = User.objects.get(username=username, password=password)
+            # user = authenticate(request, username=username, password=password)
+            # print('\n\n\n', username, password, '\n\n\n')
+            # account = Account.objects.get(user=user)
+            login(request, user)
+            print(user)
+            return redirect(account_view, username=user.get_username())
         except Exception as exeption:
             print(exeption)
     else:
         title = "Sign in"
-    context = {'form': form, "title": title}
-    template_name = 'sign-in.html'
+    context = {"title": title}
+    template_name = 'login.html'
     return render(request, template_name, context)
 
 
-def sign_out_view(request):
-    template_name = 'sign-out.html'
-    context = {'title': 'Sign Out'}
+@login_required
+def logout_view(request):
+    if request.method == 'POST':
+        if 'yes_sub' in request.POST:
+            logout(request)
+        elif 'no_sub' in request.POST:
+            pass
+        return redirect(home_view)
+    template_name = 'logout.html'
+    context = {'title': 'Logout'}
     return render(request, template_name, context)
 
 
-def list_view(request):
-    accounts = Account.objects.all()
-    template_name = 'list.html'
-    context = {'accounts': accounts, 'title': 'List View'}
-    return render(request, template_name, context)
-
-
-def add_group_view(request, account_id):
-    account = Account.objects.get(account_id=account_id)
-    form = GroupForm(request.POST or None)
-    if form.is_valid():
+@login_required
+def add_group_view(request, username):
+    account = Account.objects.get(user=request.user)
+    if request.method == 'POST':
         try:
-            group_id = form.data['group_id']
-            group_name = form.data['group_name']
-            group = Group(group_id=group_id, group_name=group_name,
-                          admin_fk=account)
-            group.save()
-            GroupMember(group_fk=group, member_fk=account).save()
-            return redirect(group_view, account_id=account_id,
+            group_id = request.POST['group_id']
+            group_name = request.POST['group_name']
+            group = Group.objects.create(group_id=group_id,
+                                         group_name=group_name,
+                                         admin_fk=account)
+            GroupMember.objects.create(group_fk=group, member_fk=account)
+            return redirect(group_view, username=username,
                             group_id=group_id)
         except Exception as exception:
             print(exception)
@@ -101,21 +120,20 @@ def add_group_view(request, account_id):
     else:
         title = 'Add New Group'
     template_name = 'add-group.html'
-    context = {'form': form, 'title': title, 'account': account}
+    context = {'title': title, 'account': account}
     return render(request, template_name, context)
 
-
-def edit_group_view(request, account_id, group_id):
-    account = Account.objects.get(account_id=account_id)
+@login_required
+def edit_group_view(request, username, group_id):
+    account = Account.objects.get(user=request.user)
     group = Group.objects.get(group_id=group_id)
     form = EditGroupModelForm(request.POST or None, instance=group)
     if request.method == 'POST':
-        print('valid')
         try:
             group_name = form.data['group_name']
             group.group_name = group_name
             group.save()
-            return redirect(group_view, account_id=account_id,
+            return redirect(group_view, username=username,
                             group_id=group_id)
         except Exception as exception:
             print(exception)
@@ -124,54 +142,60 @@ def edit_group_view(request, account_id, group_id):
         title = 'Edit Group'
     template_name = 'edit-group.html'
     print(group.group_name)
-    context = {'form': form, 'title': title, 'account': account, 'group': group}
+    context = {'form': form, 'title': title,
+               'account': account, 'group': group}
     return render(request, template_name, context)
 
 
-def delete_group_view(request, account_id, group_id):
+@login_required
+def delete_group_view(request, username, group_id):
     group = Group.objects.get(group_id=group_id)
     if request.method == 'POST':
         if 'yes_sub' in request.POST:
             group.delete()
-            return redirect(account_view, account_id=account_id)
+            return redirect(account_view, username=username)
         elif 'no_sub' in request.POST:
-            return redirect(group_view, account_id=account_id, group_id=group_id)
+            return redirect(group_view, username=username, group_id=group_id)
     title = 'Delete Group'
     template_name = 'delete-group.html'
     context = {'title': title}
     return render(request, template_name, context)
 
-def settle_view(request, account_id, group_id, settler_id):
-    account = Account.objects.get(account_id=account_id)
+
+@login_required
+def settle_view(request, username, group_id, settler_id):
+    account = Account.objects.get(user=request.user)
     group = Group.objects.get(group_id=group_id)
-    settler = Account.objects.get(account_id=settler_id)
+    settler = Account.objects.get(
+                user=User.objects.get(username=settler_id))
 
     if request.method == 'POST':
         if 'yes_sub' in request.POST:
-            func.settle(account, group, settler)
-            return redirect(group_view, account_id=account_id, group_id=group_id)
+            settle(account, group, settler)
+            return redirect(group_view, username=username, group_id=group_id)
         elif 'no_sub' in request.POST:
-            return redirect(group_view, account_id=account_id, group_id=group_id)
+            return redirect(group_view, username=username, group_id=group_id)
     title = 'Settle Member'
     template_name = 'settle.html'
     context = {'title': title, 'settler': settler}
     return render(request, template_name, context)
 
 
-def group_view(request, account_id, group_id):
-    form = AddMemberForm(request.POST or None)
-    if form.is_valid():
+@login_required
+def group_view(request, username, group_id):
+    if request.method == 'POST':
         try:
-            member_id = form.data['member_id']
+            member_id = request.POST['member_id']
             group = Group.objects.get(group_id=group_id)
-            member = Account.objects.get(account_id=member_id)
-            group_member = GroupMember(group_fk=group, member_fk=member)
-            group_member.save()
-            records = Record.objects.filter(group_fk=group)
-            for record in records:
-                RecordRatio.objects.create(record_fk=record, member_fk=member,)
+            member = Account.objects.get(
+                user=User.objects.get(username=member_id))
+            GroupMember.objects.create(group_fk=group, member_fk=member)
+
+            expenses = Expense.objects.filter(group_fk=group)
+            for expense in expenses:
+                ExpenseRatio.objects.create(expense_fk=expense, member_fk=member)
             return redirect(group_view,
-                            account_id=account_id,
+                            username=username,
                             group_id=group_id)
         except Exception:
             title = 'Add New Member Error'
@@ -179,79 +203,81 @@ def group_view(request, account_id, group_id):
         title = 'Group'
     template_name = 'group.html'
     group = Group.objects.get(group_id=group_id)
-    account = Account.objects.get(account_id=account_id)
+    account = Account.objects.get(user=request.user)
     members = GroupMember.objects.filter(group_fk=group)
-    records = Record.objects.filter(group_fk=group)
-    
-    debts_or_credits = Pay.objects.filter(group_fk=group)
-    
+    expenses = Expense.objects.filter(group_fk=group)
+
+    balance_details = BalanceDetail.objects.filter(group_fk=group)
+
     details = {}
     for member in members:
         temp = {}
-        for pay in debts_or_credits:
-            if pay.debtor_fk == member.member_fk:
-                temp[pay.creditor_fk.account_id] = pay.amount
-            elif pay.creditor_fk == member.member_fk:
-                temp[pay.debtor_fk.account_id] = pay.amount
-        details[member.member_fk.account_id] = temp
+        for balance_detail in balance_details:
+            if balance_detail.debtor_fk == member.member_fk:
+                temp[balance_detail.creditor_fk.user.username] = balance_detail.amount
+            elif balance_detail.creditor_fk == member.member_fk:
+                temp[balance_detail.debtor_fk.user.username] = balance_detail.amount
+        details[member.member_fk.user.username] = temp
 
-    context = {'title': title, 'form': form,
-               'group': group, 'members': members, 'account': account,
-               'records': records, 'details': details}
+    context = {'title': title, 'group': group,
+               'members': members, 'account': account,
+               'expenses': expenses, 'details': details}
     return render(request, template_name, context)
 
 
-def add_record_view(request, account_id, group_id):
-    account = Account.objects.get(account_id=account_id)
+@login_required
+def add_expense_view(request, username, group_id):
+    account = Account.objects.get(user=request.user)
     group = Group.objects.get(group_id=group_id)
     group_members = GroupMember.objects.filter(group_fk=group)
-    form = RecordForm(request.POST or None)
+    form = ExpenseForm(request.POST or None)
     members = []
     ratio_forms = []
     for member in group_members:
         members.append(member.member_fk)
         ratio_form = RatioForm(None)
-        ratio_form.label_suffix = member.member_fk.first_name
+        ratio_form.label_suffix = member.member_fk.user.get_short_name()
         ratio_forms.append(ratio_form)
     if form.is_valid():
         try:
             for key, value in request.POST.lists():
                 if key == 'ratio':
                     ratioes = value
-            record_type = 'payment'
+            expense_type = 'payment'
             title = form.data['title']
             payer_id = form.data['payer_id']
-            payer = Account.objects.get(account_id=payer_id)
+            payer = Account.objects.get(
+                user=User.objects.get(username=payer_id))
             cost = int(form.data['cost'])
-            record = Record(group_fk=group, account_fk=account,
+            expense = Expense(expense_type=expense_type, group_fk=group, adder_fk=account,
                             payer_fk=payer, title=title, cost=cost)
-            record.save()
+            expense.save()
             for i in range(len(members)):
-                RecordRatio.objects.create(record_fk=record,
-                                            member_fk=members[i],
-                                            ratio=ratioes[i])
-            func.update_record_balances(record)
-            func.update_group_pays(group)
+                ExpenseRatio.objects.create(expense_fk=expense,
+                                           member_fk=members[i],
+                                           ratio=ratioes[i])
+            update_expense_balances(expense)
+            update_group_balance_details(group)
 
-            return redirect(group_view, account_id=account_id,
+            return redirect(group_view, username=username,
                             group_id=group_id)
         except Exception as exception:
             print(exception)
-            title = 'Add New Record Error'
+            title = 'Add New Expense Error'
     else:
-        title = 'Add New Record'
-    template_name = 'add-record.html'
+        title = 'Add New Expense'
+    template_name = 'add-expense.html'
     context = {'form': form, 'ratio_forms': ratio_forms,
                'title': title, 'account': account}
     return render(request, template_name, context)
 
 
-def record_view(request, account_id, group_id, record_pk):
-    # account = Account.objects.get(account_id=account_id)
+@login_required
+def expense_view(request, username, group_id, expense_pk):
     # group = Group.objects.get(group_id=group_id)
-    record = Record.objects.get(pk=record_pk)
-    ratioes = RecordRatio.objects.filter(record_fk=record)
+    expense = Expense.objects.get(pk=expense_pk)
+    ratioes = ExpenseRatio.objects.filter(expense_fk=expense)
     context = {'title': 'Account Detail',
-               'record': record, 'ratioes': ratioes}
-    template_name = 'record.html'
+               'expense': expense, 'ratioes': ratioes}
+    template_name = 'expense.html'
     return render(request, template_name, context)

@@ -16,7 +16,7 @@
         <div class='card-body'>
             <p class='card-title'>Group id: {{ group.group_id }}</p>
             <p class='card-title'>Group name: {{ group.group_name }}</p>
-            <p class='card-title'>Group admin: {{ group.admin_fk.account_id}}</p>
+            <p class='card-title'>Group admin: {{ group.admin_fk.user.username}}</p>
         </div>
     </div>
 </div>
@@ -26,21 +26,21 @@
     <div class="col col-sm-6 col-lg-3">
         <img class="rounded-circle" src="{% static 'img/test.jpeg' %}" width="180" height="180">
         </img>
-        <h2 style="padding-left: 10%;">{{ member.member_fk.first_name }}</h2>
+        <h2 style="padding-left: 10%;">{{ member.member_fk.user.first_name }}</h2>
         <p style="padding-left: 10%;">Balance: {{ member.balance }}</p>
         <p style="padding-left: 10%;">
-            <a class="btn btn-primary" href="./{{group.group_id}}/settle/{{member.member_fk.account_id}}">
+            <a class="btn btn-primary" href="./{{group.group_id}}/settle/{{member.member_fk.user.username}}">
                 Settle
             </a>
         </p>
         <p style="padding-left: 10%;">
             <button class="btn btn-primary" type="button" data-toggle="collapse"
-                data-target="#{{ member.member_fk.first_name }}" aria-expanded="false"
-                aria-controls="{{ member.member_fk.first_name }}">
+                data-target="#{{ member.member_fk.user.first_name }}" aria-expanded="false"
+                aria-controls="{{ member.member_fk.user.first_name }}">
                 View details &raquo;
             </button>
         </p>
-        <div class="collapse" id="{{ member.member_fk.first_name }}">
+        <div class="collapse" id="{{ member.member_fk.user.first_name }}">
             <div class="card card-body">
                 {% if member.balance > 0 %}
                 Credits:
@@ -48,7 +48,7 @@
                 Debts:
                 {% endif %}
                 {% for key, value in details.items %}
-                {% if key == member.member_fk.account_id %}
+                {% if key == member.member_fk.user.username %}
                 {% for key2, value2 in value.items %}
                 {% if member.balance > 0 %}
                 <p>{{ value2 }} from {{ key2 }}</p>
@@ -66,30 +66,30 @@
 
 <div class="row justify-content-center">
     </br>
-    {% for record in records %}
+    {% for expense in expenses %}
     <div class="col col-sm-6 col-lg-4">
-        {% if record.record_type == 'payment' %}
-        <a href="{{ group.group_id }}/{{ record.pk }}">
+        {% if expense.expense_type == 'payment' %}
+        <a href="{{ group.group_id }}/{{ expense.pk }}">
             <ul class="list-group">
                 <li class="list-group-item bg-light text-dark">
-                    Title: {{ record.title }}
+                    Title: {{ expense.title }}
                     </br>
-                    Cost: {{ record.cost }} Tomans
+                    Cost: {{ expense.cost }} Tomans
                     </br>
-                    Added At: {{ record.date_time }}
+                    Added At: {{ expense.date_time }}
                 </li>
             </ul>
         </a>
         {% endif %}
-        {% if record.record_type == 'settle' %}
-        <a href="{{ group.group_id }}/{{ record.pk }}">
+        {% if expense.expense_type == 'settle' %}
+        <a href="{{ group.group_id }}/{{ expense.pk }}">
             <ul class="list-group">
                 <li class="list-group-item bg-dark text-white">
-                    Title: {{ record.title }}
+                    Title: {{ expense.title }}
                     </br>
-                    Cost: {{ record.cost }} Tomans
+                    Cost: {{ expense.cost }} Tomans
                     </br>
-                    Added At: {{ record.date_time }}
+                    Added At: {{ expense.date_time }}
                 </li>
             </ul>
         </a>
@@ -101,7 +101,7 @@
 
 
 
-<a class="btn btn-primary" href="{{ account.get_absolute_url }}{{ group.get_absolute_url }}/add-record"
+<a class="btn btn-primary" href="{{ account.get_absolute_url }}{{ group.get_absolute_url }}/add-expense"
     role="button">Add Record</a>
 
 <br>
@@ -110,7 +110,8 @@
 {% if group.admin_fk == account %}
 
 <form method='POST' action='' enctype='multipart/form-data'> {% csrf_token %}
-    {{ form.as_p }}
+    <label for="member_id" class="sr-only">Member id</label>
+    <input name="member_id" type="text" class="form-control" placeholder="Member id" required autofocus>
     <button type='submit'>Add Member</button>
 </form>
 

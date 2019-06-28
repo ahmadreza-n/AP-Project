@@ -1,5 +1,6 @@
 from django import forms
-from .models import Account, Group
+from .models import User, Group
+# from django.contrib.auth.forms import AuthenticationForm
 
 
 class ContactForm(forms.Form):
@@ -7,27 +8,18 @@ class ContactForm(forms.Form):
     email = forms.EmailField()
     content = forms.CharField(widget=forms.Textarea)
 
-    def clean_email(self, *args, **kwargs):
-        email = self.cleaned_data.get('email')
-        print(self.cleaned_data)
-        print(email)
-        if email.endswith(".edu"):
-            raise forms.ValidationError(
-                "This is not a valid email. Please don't use .edu.")
-        return email
 
-
-class AccountModelForm(forms.ModelForm):
+class UserForm(forms.ModelForm):
     password = forms.CharField(max_length=20, widget=forms.PasswordInput)
 
     class Meta:
-        model = Account
+        model = User
         fields = ['first_name', 'last_name',
-                  'account_id', 'password']
+                  'username', 'password']
 
 
 class AccountForm(forms.Form):
-    account_id = forms.SlugField(max_length=20)
+    username = forms.SlugField(max_length=20)
     password = forms.CharField(max_length=20, widget=forms.PasswordInput)
 
 
@@ -51,7 +43,7 @@ class RatioForm(forms.Form):
     ratio = forms.IntegerField(label='Ratio of ')
 
 
-class RecordForm(forms.Form):
+class ExpenseForm(forms.Form):
     title = forms.CharField(max_length=20)
     payer_id = forms.CharField(max_length=20)
     cost = forms.IntegerField()

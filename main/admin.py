@@ -1,9 +1,10 @@
 from django.contrib import admin
-from . import models
+from .models import (Account, Group, GroupMember,
+                     Expense, ExpenseRatio, BalanceDetail)
 
-admin.site.register(models.Account)
-admin.site.register(models.Group)
-admin.site.register(models.GroupMember)
-admin.site.register(models.Record)
-admin.site.register(models.RecordRatio)
-admin.site.register(models.Pay)
+admin.site.register(Account)
+admin.site.register(Group)
+admin.site.register(GroupMember)
+admin.site.register(Expense)
+admin.site.register(ExpenseRatio)
+admin.site.register(BalanceDetail)
