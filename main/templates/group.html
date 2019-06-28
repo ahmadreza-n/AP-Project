@@ -29,7 +29,7 @@
         <h2 style="padding-left: 10%;">{{ member.member_fk.user.first_name }}</h2>
         <p style="padding-left: 10%;">Balance: {{ member.balance }}</p>
         <p style="padding-left: 10%;">
-            <a class="btn btn-primary" href="./{{group.group_id}}/settle/{{member.member_fk.user.username}}">
+            <a class="btn btn-primary" href="settle/{{member.member_fk.user.username}}">
                 Settle
             </a>
         </p>
@@ -69,7 +69,7 @@
     {% for expense in expenses %}
     <div class="col col-sm-6 col-lg-4">
         {% if expense.expense_type == 'payment' %}
-        <a href="{{ group.group_id }}/{{ expense.pk }}">
+        <a href="{{ expense.pk }}">
             <ul class="list-group">
                 <li class="list-group-item bg-light text-dark">
                     Title: {{ expense.title }}
@@ -82,7 +82,7 @@
         </a>
         {% endif %}
         {% if expense.expense_type == 'settle' %}
-        <a href="{{ group.group_id }}/{{ expense.pk }}">
+        <a href="{{ expense.pk }}">
             <ul class="list-group">
                 <li class="list-group-item bg-dark text-white">
                     Title: {{ expense.title }}
@@ -101,7 +101,7 @@
 
 
 
-<a class="btn btn-primary" href="{{ account.get_absolute_url }}{{ group.get_absolute_url }}/add-expense"
+<a class="btn btn-primary" href="add-expense"
     role="button">Add Record</a>
 
 <br>
@@ -115,9 +115,9 @@
     <button type='submit'>Add Member</button>
 </form>
 
-<a class="btn btn-primary" href="{{ account.get_absolute_url }}{{ group.get_absolute_url }}/delete-group"
+<a class="btn btn-primary" href="delete-group"
     role="button">Delete Group</a>
-<a class="btn btn-primary" href="{{ account.get_absolute_url }}{{ group.get_absolute_url }}/edit-group"
+<a class="btn btn-primary" href="edit-group"
     role="button">Edit Group</a>
 
 {% endif %}

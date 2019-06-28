@@ -12,7 +12,7 @@ class Account(models.Model):
         return self.user.get_username()
 
     def get_add_url(self):
-        return f"/{self.user.get_username()}/add-group"
+        return f"/add-group"
 
     def get_absolute_url(self):
         return f"/{self.user.get_username()}"

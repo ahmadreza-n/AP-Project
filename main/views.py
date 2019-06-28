@@ -102,7 +102,7 @@ def logout_view(request):
 
 
 @login_required
-def add_group_view(request, username):
+def add_group_view(request):
     account = Account.objects.get(user=request.user)
     if request.method == 'POST':
         try:
@@ -112,8 +112,7 @@ def add_group_view(request, username):
                                          group_name=group_name,
                                          admin_fk=account)
             GroupMember.objects.create(group_fk=group, member_fk=account)
-            return redirect(group_view, username=username,
-                            group_id=group_id)
+            return redirect(group_view, group_id=group_id)
         except Exception as exception:
             print(exception)
             title = 'Add New Group Error'
@@ -124,7 +123,7 @@ def add_group_view(request, username):
     return render(request, template_name, context)
 
 @login_required
-def edit_group_view(request, username, group_id):
+def edit_group_view(request, group_id):
     account = Account.objects.get(user=request.user)
     group = Group.objects.get(group_id=group_id)
     form = EditGroupModelForm(request.POST or None, instance=group)
@@ -133,8 +132,7 @@ def edit_group_view(request, username, group_id):
             group_name = form.data['group_name']
             group.group_name = group_name
             group.save()
-            return redirect(group_view, username=username,
-                            group_id=group_id)
+            return redirect(group_view, group_id=group_id)
         except Exception as exception:
             print(exception)
             title = 'Edit Group Error'
@@ -148,14 +146,14 @@ def edit_group_view(request, username, group_id):
 
 
 @login_required
-def delete_group_view(request, username, group_id):
+def delete_group_view(request, group_id):
     group = Group.objects.get(group_id=group_id)
     if request.method == 'POST':
         if 'yes_sub' in request.POST:
             group.delete()
             return redirect(account_view, username=username)
         elif 'no_sub' in request.POST:
-            return redirect(group_view, username=username, group_id=group_id)
+            return redirect(group_view, group_id=group_id)
     title = 'Delete Group'
     template_name = 'delete-group.html'
     context = {'title': title}
@@ -163,7 +161,7 @@ def delete_group_view(request, username, group_id):
 
 
 @login_required
-def settle_view(request, username, group_id, settler_id):
+def settle_view(request, group_id, settler_id):
     account = Account.objects.get(user=request.user)
     group = Group.objects.get(group_id=group_id)
     settler = Account.objects.get(
@@ -172,9 +170,9 @@ def settle_view(request, username, group_id, settler_id):
     if request.method == 'POST':
         if 'yes_sub' in request.POST:
             settle(account, group, settler)
-            return redirect(group_view, username=username, group_id=group_id)
+            return redirect(group_view, group_id=group_id)
         elif 'no_sub' in request.POST:
-            return redirect(group_view, username=username, group_id=group_id)
+            return redirect(group_view, group_id=group_id)
     title = 'Settle Member'
     template_name = 'settle.html'
     context = {'title': title, 'settler': settler}
@@ -182,7 +180,7 @@ def settle_view(request, username, group_id, settler_id):
 
 
 @login_required
-def group_view(request, username, group_id):
+def group_view(request, group_id):
     if request.method == 'POST':
         try:
             member_id = request.POST['member_id']
@@ -194,9 +192,7 @@ def group_view(request, username, group_id):
             expenses = Expense.objects.filter(group_fk=group)
             for expense in expenses:
                 ExpenseRatio.objects.create(expense_fk=expense, member_fk=member)
-            return redirect(group_view,
-                            username=username,
-                            group_id=group_id)
+            return redirect(group_view, group_id=group_id)
         except Exception:
             title = 'Add New Member Error'
     else:
@@ -226,7 +222,7 @@ def group_view(request, username, group_id):
 
 
 @login_required
-def add_expense_view(request, username, group_id):
+def add_expense_view(request, group_id):
     account = Account.objects.get(user=request.user)
     group = Group.objects.get(group_id=group_id)
     group_members = GroupMember.objects.filter(group_fk=group)
@@ -259,8 +255,7 @@ def add_expense_view(request, username, group_id):
             update_expense_balances(expense)
             update_group_balance_details(group)
 
-            return redirect(group_view, username=username,
-                            group_id=group_id)
+            return redirect(group_view, group_id=group_id)
         except Exception as exception:
             print(exception)
             title = 'Add New Expense Error'
@@ -273,7 +268,7 @@ def add_expense_view(request, username, group_id):
 
 
 @login_required
-def expense_view(request, username, group_id, expense_pk):
+def expense_view(request, group_id, expense_pk):
     # group = Group.objects.get(group_id=group_id)
     expense = Expense.objects.get(pk=expense_pk)
     ratioes = ExpenseRatio.objects.filter(expense_fk=expense)
