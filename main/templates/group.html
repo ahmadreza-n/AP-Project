@@ -64,9 +64,11 @@
     {% endfor %}
 </div>
 
-<h3>Group Records:</h3>
-{% for record in records %}
-    {% if record.record_type == 'payment' %}
+<div class="row justify-content-center">
+    </br>
+    {% for record in records %}
+    <div class="col col-sm-6 col-lg-4">
+        {% if record.record_type == 'payment' %}
         <a href="{{ group.group_id }}/{{ record.pk }}">
             <ul class="list-group">
                 <li class="list-group-item bg-light text-dark">
@@ -78,8 +80,8 @@
                 </li>
             </ul>
         </a>
-    {% endif %}
-    {% if record.record_type == 'settle' %}
+        {% endif %}
+        {% if record.record_type == 'settle' %}
         <a href="{{ group.group_id }}/{{ record.pk }}">
             <ul class="list-group">
                 <li class="list-group-item bg-dark text-white">
@@ -91,8 +93,13 @@
                 </li>
             </ul>
         </a>
-    {% endif %}
-{% endfor %}
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+
+
 
 <a class="btn btn-primary" href="{{ account.get_absolute_url }}{{ group.get_absolute_url }}/add-record"
     role="button">Add Record</a>
@@ -109,7 +116,7 @@
 
 <a class="btn btn-primary" href="{{ account.get_absolute_url }}{{ group.get_absolute_url }}/delete-group"
     role="button">Delete Group</a>
-    <a class="btn btn-primary" href="{{ account.get_absolute_url }}{{ group.get_absolute_url }}/edit-group"
+<a class="btn btn-primary" href="{{ account.get_absolute_url }}{{ group.get_absolute_url }}/edit-group"
     role="button">Edit Group</a>
 
 {% endif %}

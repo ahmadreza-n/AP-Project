@@ -231,7 +231,7 @@ def add_record_view(request, account_id, group_id):
                                             member_fk=members[i],
                                             ratio=ratioes[i])
             func.update_record_balances(record)
-            func.update_record_mm_balances(record)
+            func.update_group_pays(group)
 
             return redirect(group_view, account_id=account_id,
                             group_id=group_id)

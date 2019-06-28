@@ -33,13 +33,11 @@ def update_record_balances(record):
         group_member.save()
 
 
-def update_record_mm_balances(record): # record argument is redundant #######
-    group = record.group_fk
+def update_group_pays(group):
     group_members = models.GroupMember.objects.filter(group_fk=group)
     balances = {}
     for group_member in group_members:
         balances[group_member.member_fk.account_id] = group_member.balance
-    print(balances)
     pays = []
     for i in range(len(group_members)):
         most_positive = max(balances, key=lambda k: balances[k])
@@ -97,4 +95,4 @@ def settle(account, group, settler):
                                        member_fk=members[i].member_fk,
                                        ratio=ratio)
         update_record_balances(record)
-        update_record_mm_balances(record)
+        update_group_pays(record)

@@ -79,5 +79,5 @@ class Pay(models.Model):
         string = f'{self.debtor_fk.account_id} '
         string += f'owes {self.amount} '
         string += f'to {self.creditor_fk.account_id} '
-        string += f'to {self.group_fk.group_id}'
+        string += f'in {self.group_fk.group_id}'
         return string
