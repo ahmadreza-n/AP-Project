@@ -26,28 +26,35 @@
 {% endblock %}
 
 {% block content %}
-<div class="text-center">
-    <img class="mb-4" src="{% static 'img/bootstrap-solid.svg' %}" alt="LOGO" width="72" height="72">
-    <h1 class="h3 mb-3 font-weight-normal">Please sign up</h1>
-    <form class="form-signin" method="POST" action="/register"> {% csrf_token %}
-        <label for="first_name" class="sr-only">First Name</label>
-        <input name="first_name" type="text" class="form-control" placeholder="First Name" required
-            autofocus>
-        <label for="last_name" class="sr-only">Last Name</label>
-        <input name="last_name" type="text" class="form-control" placeholder="Last Name" required>
-        <label for="username" class="sr-only">Username</label>
-        <input name="username" type="text" class="form-control" placeholder="Username" required>
-        <label for="password" class="sr-only">Password</label>
-        <input name="password" type="password" class="form-control" placeholder="Password"
-            aria-describedby="help" required>
-        <small id="help" class="form-text text-muted">We'll never share your data with anyone else.</small>
-        <div class="checkbox mb-3">
-            <label>
-                <input type="checkbox" value="remember-me"> Remember me
-            </label>
-        </div>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
-        <p class="mt-5 mb-3 text-muted">&copy; 2019</p>
-    </form>
-</div>
+<main role="main" class="container">
+    <div class="text-center">
+        <img class="mb-4" src="{% static 'img/favicon.png' %}" alt="LOGO" width="72" height="72">
+        <h1 class="h3 mb-3 font-weight-normal">Please sign up</h1>
+        <form class="form-signin" enctype="multipart/form-data" method="POST" action="/register"> {% csrf_token %}
+            <label for="first_name" class="sr-only">First Name</label>
+            <input name="first_name" type="text" class="form-control" placeholder="First Name" required autofocus>
+            <label for="last_name" class="sr-only">Last Name</label>
+            <input name="last_name" type="text" class="form-control" placeholder="Last Name" required>
+            <label for="username" class="sr-only">Username</label>
+            <input name="username" type="text" class="form-control" placeholder="Username" required>
+            <label for="password" class="sr-only">Password</label>
+            <input name="password" type="password" class="form-control" placeholder="Password" aria-describedby="help"
+                required>
+
+            <div class="custom-file" style="text-align: left;">
+                <input type="file" class="custom-file-input" id="profile_picture" name="profile_picture">
+                <label class="custom-file-label" for="profile_picture">Profile Picture</label>
+            </div>
+            <small id="help" class="form-text text-muted">We'll never share your data with anyone else.</small>
+
+            <div class="checkbox mb-3">
+                <label>
+                    <input type="checkbox" value="remember-me"> Remember me
+                </label>
+            </div>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
+            <p class="mt-5 mb-3 text-muted">&copy; 2019</p>
+        </form>
+    </div>
+</main>
 {% endblock %}

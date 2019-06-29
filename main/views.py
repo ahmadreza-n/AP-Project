@@ -3,11 +3,9 @@ from django.shortcuts import render, redirect
 from .func import (settle, update_group_balances,
                    update_group_balance_details, update_expense_balances)
 
-from .forms import (UserForm,
+from .forms import (UserForm, AccountForm,
                     GroupForm, ContactForm, AddMemberForm,
                     ExpenseForm, RatioForm, EditGroupModelForm)
-
-from .forms import UserForm, ContactForm
 
 from .models import (User, Account, Group, GroupMember, Expense,
                      ExpenseRatio, BalanceDetail)
@@ -42,25 +40,34 @@ def contact_view(request):
 
 
 def register_view(request):
-    form = UserForm(request.POST or None)
-    if form.is_valid():
+    user_form = UserForm(request.POST or None)
+    account_form = AccountForm(request.POST or None, request.FILES or None)
+    if user_form.is_valid() and account_form.is_valid():
+        print(request.FILES)
         try:
-            user = form.save()
-            Account.objects.create(user=user)
+            user = user_form.save()
+            account = account_form.save(commit=False)
+            account.user = user
+            if 'profile_picture' in request.FILES:
+                print('found it')
+                account.profile_picture = request.FILES['profile_picture']
+            account.save()
+            # Account.objects.create(user=user)
             login(request, user)
             return redirect(account_view, username=user.get_username())
         except Exception as exception:
             print(exception)
     template_name = 'register.html'
-    context = {'form': form, 'title': 'Register'}
+    context = {'title': 'Register', 'user_form':user_form, 'account_form':account_form}
     return render(request, template_name, context)
 
 
 @login_required
 def account_view(request, username):
     account = Account.objects.get(user=request.user)
+    print('\n\n\n', account.profile_picture, '\n\n\n')
     profile_account = Account.objects.get(
-                user=User.objects.get(username=username))
+        user=User.objects.get(username=username))
     groups = GroupMember.objects.filter(member_fk=profile_account)
     if profile_account == account:
         template_name = 'account.html'
@@ -130,6 +137,7 @@ def add_group_view(request):
     context = {'title': title, 'account': account}
     return render(request, template_name, context)
 
+
 @login_required
 def edit_group_view(request, group_id):
     account = Account.objects.get(user=request.user)
@@ -159,7 +167,7 @@ def delete_group_view(request, group_id):
     if request.method == 'POST':
         if 'yes_sub' in request.POST:
             group.delete()
-            return redirect(account_view, username=username)
+            return redirect(account_view, username=request.user.get_username())
         elif 'no_sub' in request.POST:
             return redirect(group_view, group_id=group_id)
     title = 'Delete Group'
@@ -173,7 +181,7 @@ def settle_view(request, group_id, settler_id):
     account = Account.objects.get(user=request.user)
     group = Group.objects.get(group_id=group_id)
     settler = Account.objects.get(
-                user=User.objects.get(username=settler_id))
+        user=User.objects.get(username=settler_id))
 
     if request.method == 'POST':
         if 'yes_sub' in request.POST:
@@ -199,7 +207,8 @@ def group_view(request, group_id):
 
             expenses = Expense.objects.filter(group_fk=group)
             for expense in expenses:
-                ExpenseRatio.objects.create(expense_fk=expense, member_fk=member)
+                ExpenseRatio.objects.create(
+                    expense_fk=expense, member_fk=member)
             return redirect(group_view, group_id=group_id)
         except Exception:
             title = 'Add New Member Error'
@@ -254,12 +263,12 @@ def add_expense_view(request, group_id):
                 user=User.objects.get(username=payer_id))
             cost = int(form.data['cost'])
             expense = Expense(expense_type=expense_type, group_fk=group, adder_fk=account,
-                            payer_fk=payer, title=title, cost=cost)
+                              payer_fk=payer, title=title, cost=cost)
             expense.save()
             for i in range(len(members)):
                 ExpenseRatio.objects.create(expense_fk=expense,
-                                           member_fk=members[i],
-                                           ratio=ratioes[i])
+                                            member_fk=members[i],
+                                            ratio=ratioes[i])
             update_expense_balances(expense)
             update_group_balance_details(group)
 

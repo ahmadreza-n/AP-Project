@@ -28,11 +28,7 @@
         </img>
         <h2 style="padding-left: 10%;">{{ member.member_fk.user.first_name }}</h2>
         <p style="padding-left: 10%;">Balance: {{ member.balance }}</p>
-        <p style="padding-left: 10%;">
-            <a class="btn btn-primary" href="settle/{{member.member_fk.user.username}}">
-                Settle
-            </a>
-        </p>
+
         <p style="padding-left: 10%;">
             <button class="btn btn-primary" type="button" data-toggle="collapse"
                 data-target="#{{ member.member_fk.user.first_name }}" aria-expanded="false"
@@ -58,6 +54,11 @@
                 {% endfor %}
                 {% endif %}
                 {% endfor %}
+                <div style="width: 30%;">
+                    <a class="btn btn-primary" href="settle/{{member.member_fk.user.username}}">
+                        Settle
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -101,8 +102,7 @@
 
 
 
-<a class="btn btn-primary" href="add-expense"
-    role="button">Add Record</a>
+<a class="btn btn-primary" href="add-expense" role="button">Add Record</a>
 
 <br>
 <br>
@@ -115,10 +115,8 @@
     <button type='submit'>Add Member</button>
 </form>
 
-<a class="btn btn-primary" href="delete-group"
-    role="button">Delete Group</a>
-<a class="btn btn-primary" href="edit-group"
-    role="button">Edit Group</a>
+<a class="btn btn-primary" href="delete-group" role="button">Delete Group</a>
+<a class="btn btn-primary" href="edit-group" role="button">Edit Group</a>
 
 {% endif %}
 

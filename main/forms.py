@@ -1,5 +1,5 @@
 from django import forms
-from .models import User, Group
+from .models import User, Group, Account
 # from django.contrib.auth.forms import AuthenticationForm
 
 
@@ -18,9 +18,10 @@ class UserForm(forms.ModelForm):
                   'username', 'password']
 
 
-class AccountForm(forms.Form):
-    username = forms.SlugField(max_length=20)
-    password = forms.CharField(max_length=20, widget=forms.PasswordInput)
+class AccountForm(forms.ModelForm):
+    class Meta():
+        model = Account
+        fields = ['profile_picture']
 
 
 class GroupForm(forms.Form):

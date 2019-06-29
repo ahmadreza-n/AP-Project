@@ -1,12 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # first_name = models.CharField(max_length=20)
     # last_name = models.CharField(max_length=20)
     # account_id = models.SlugField(max_length=20, unique=True)
     # password = models.CharField(max_length=20)
+    profile_picture = models.ImageField(
+        upload_to='main/static/img/profile_pictures', blank=True)
 
     def __str__(self):
         return self.user.get_username()
@@ -15,7 +18,10 @@ class Account(models.Model):
         return f"/add-group"
 
     def get_absolute_url(self):
-        return f"/{self.user.get_username()}"
+        return f"{self.user.get_username()}"
+
+    def get_profile_picture_address(self):
+        return self.profile_picture.url[4:]
 
 
 class Group(models.Model):
