@@ -4,7 +4,7 @@ from .func import (settle, update_group_balances,
                    update_group_balance_details, update_expense_balances)
 
 from .forms import (UserForm, AccountForm,
-                    GroupForm, ContactForm, AddMemberForm, EditGroupModelForm)
+                    GroupForm, ContactForm, AddMemberForm)
 
 from .models import (User, Account, Group, GroupMember, Expense,
                      ExpenseRatio, BalanceDetail)
@@ -143,10 +143,9 @@ def add_group_view(request):
 def edit_group_view(request, group_id):
     account = Account.objects.get(user=request.user)
     group = Group.objects.get(group_id=group_id)
-    form = EditGroupModelForm(request.POST or None, instance=group)
     if request.method == 'POST':
         try:
-            group_name = form.data['group_name']
+            group_name = request.POST['group_name']
             group.group_name = group_name
             group.save()
             return redirect(group_view, group_id=group_id)
@@ -156,8 +155,7 @@ def edit_group_view(request, group_id):
     else:
         title = 'Edit Group'
     template_name = 'edit-group.html'
-    print(group.group_name)
-    context = {'form': form, 'title': title,
+    context = {'title': title,
                'account': account, 'group': group}
     return render(request, template_name, context)
 
@@ -287,4 +285,58 @@ def expense_view(request, group_id, expense_pk):
     context = {'title': 'Account Detail',
                'expense': expense, 'ratioes': ratioes}
     template_name = 'expense.html'
+    return render(request, template_name, context)
+
+
+@login_required
+def delete_expense_view(request, group_id, expense_pk):
+    expense = Expense.objects.get(pk=expense_pk)
+    if request.method == 'POST':
+        if 'yes_sub' in request.POST:
+            expense.delete()
+            return redirect(group_view, group_id=group_id)
+        elif 'no_sub' in request.POST:
+            return redirect(expense_view, group_id=group_id, expense_pk=expense_pk)
+    title = 'Delete Expense'
+    template_name = 'delete-expense.html'
+    context = {'title': title}
+    return render(request, template_name, context)
+
+
+
+@login_required
+def edit_expense_view(request, group_id, expense_pk):
+    account = Account.objects.get(user=request.user)
+    group = Group.objects.get(group_id=group_id)
+    group_members = GroupMember.objects.filter(group_fk=group)
+    expense = Expense.objects.get(pk=expense_pk)
+    members = []
+    for member in group_members:
+        members.append(member.member_fk)
+    if request.method == 'POST':
+        try:
+            expense.title = request.POST['title']
+            payer_id = request.POST['payer_id']
+            expense.payer = Account.objects.get(
+                user=User.objects.get(username=payer_id))
+            expense.cost = int(request.POST['cost'])
+            expense.save()
+            for member in members:
+                ratio_of_username = f'ratio_of_{member.user.username}'
+                ratio = int(request.POST[ratio_of_username])
+                expense_ratio = ExpenseRatio.objects.get(expense_fk=expense,
+                                                         member_fk=member)
+                expense_ratio.ratio = ratio
+                expense_ratio.save()
+            update_expense_balances(expense)
+            update_group_balance_details(group)
+            return redirect(expense_view, group_id=group_id, expense_pk=expense_pk)
+        except Exception as exception:
+            print(exception)
+            title = 'Add New Expense Error'
+    else:
+        title = 'Edit Expense'
+    template_name = 'edit-expense.html'
+    context = {'members': members, 'expense':expense,
+               'title': title, 'account': account}
     return render(request, template_name, context)

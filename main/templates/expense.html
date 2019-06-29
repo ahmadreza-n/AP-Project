@@ -20,7 +20,7 @@
             </br>
             Paid By: {{ expense.payer_fk.user.first_name }}
             </br>
-            Added By: {{ expense.account_fk.user.first_name }}
+            Added By: {{ expense.adder_fk.user.first_name }}
             </br>
             Added At: {{ expense.date_time }}
             <br>
@@ -32,5 +32,7 @@
             {% endfor %}
         </li>
     </ul>
+    <a href="{{ expense.pk }}/delete-expense">Delete</a>
+    <a href="{{ expense.pk }}/edit-expense">Edit</a>
 </main>
 {% endblock %}

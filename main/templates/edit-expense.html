@@ -16,14 +16,14 @@
     <div class="form-group row">
         <label for="title" class="col-sm-2 col-form-label">Title</label>
         <div class="col-sm-10">
-            <input name="title" class="form-control" id="title" placeholder="Title">
+            <input name="title" class="form-control" id="title" value="{{ expense.title }}" placeholder="Title">
         </div>
     </div>
 
     <div class="form-group row">
         <label for="payer_id" class="col-sm-2 col-form-label">Payer</label>
         <div class="col-sm-10">
-            <select name="payer_id" class="form-control" id="payer_id">
+            <select name="payer_id" class="form-control" id="payer_id" value="{{ expense.payer.payer_id }}">
                 {% for member in members %}
                 <option>{{ member.user.username }}</option>
                 {% endfor %}
@@ -34,7 +34,7 @@
     <div class="form-group row">
         <label for="cost" class="col-sm-2 col-form-label">Cost</label>
         <div class="col-sm-10">
-            <input name="cost" class="form-control" id="cost" placeholder="Cost">
+            <input name="cost" class="form-control" id="cost" value="{{ expense.cost }}" placeholder="Cost">
         </div>
     </div>
 
@@ -44,11 +44,11 @@
             {{ member.user.get_short_name }}</label>
         <div class="col-sm-10">
             <input name="ratio_of_{{ member.user.username }}" class="form-control"
-                id="ratio_of_{{ member.user.username }}" value="0" placeholder="Ratio of {{ member.user.get_short_name }}">
+                id="ratio_of_{{ member.user.username }}" placeholder="Ratio of {{ member.user.get_short_name }}">
         </div>
     </div>
     {% endfor %}
 
-    <button type="submit" class="btn btn-primary">Add Expense</button>
+    <button type="submit" class="btn btn-primary">Edit Expense</button>
 </form>
 {% endblock %}

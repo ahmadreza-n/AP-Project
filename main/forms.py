@@ -29,12 +29,5 @@ class GroupForm(forms.Form):
     group_name = forms.CharField(max_length=20)
 
 
-class EditGroupModelForm(forms.ModelForm):
-
-    class Meta:
-        model = Group
-        fields = ['group_name']
-
-
 class AddMemberForm(forms.Form):
     member_id = forms.SlugField(max_length=20)

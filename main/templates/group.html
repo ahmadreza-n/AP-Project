@@ -88,23 +88,14 @@
         </br>
         {% for expense in expenses %}
         <div class="col col-sm-6 col-lg-4">
-            {% if expense.expense_type == 'payment' %}
-            <a href="{{ expense.pk }}">
+            <a  class="card-link" href="{{ expense.pk }}">
                 <ul class="list-group">
+                    {% if expense.expense_type == 'payment' %}
                     <li class="list-group-item bg-light text-dark">
-                        Title: {{ expense.title }}
-                        </br>
-                        Cost: {{ expense.cost }} Tomans
-                        </br>
-                        Added At: {{ expense.date_time }}
-                    </li>
-                </ul>
-            </a>
-            {% endif %}
-            {% if expense.expense_type == 'settle' %}
-            <a href="{{ expense.pk }}">
-                <ul class="list-group">
+                    {% endif %}
+                    {% if expense.expense_type == 'settle' %}
                     <li class="list-group-item bg-dark text-white">
+                    {% endif %}
                         Title: {{ expense.title }}
                         </br>
                         Cost: {{ expense.cost }} Tomans
@@ -113,7 +104,6 @@
                     </li>
                 </ul>
             </a>
-            {% endif %}
         </div>
         {% endfor %}
     </div>
