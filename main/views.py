@@ -4,25 +4,25 @@ from .func import (settle, update_group_balances,
                    update_group_balance_details, update_expense_balances)
 
 from .forms import (UserForm, AccountForm,
-                    GroupForm, ContactForm, AddMemberForm,
-                    ExpenseForm, RatioForm, EditGroupModelForm)
+                    GroupForm, ContactForm, AddMemberForm, EditGroupModelForm)
 
 from .models import (User, Account, Group, GroupMember, Expense,
                      ExpenseRatio, BalanceDetail)
 
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 # from django.utils import timezone
 
 
 def home_view(request):
-    username = request.user.__str__()
-    if username == 'AnonymousUser':
+    user = request.user
+    try:
+        account = Account.objects.get(user=user)
+        return redirect(account_view, username=account.user.get_username())
+    except Exception as exception:
+        print(exception)
         context = {'title': 'Welcome to Splitter'}
         return render(request, 'home.html', context)
-    else:
-        print('else')
-        return redirect(account_view, username=username)
 
 
 def about_view(request):
@@ -58,7 +58,8 @@ def register_view(request):
         except Exception as exception:
             print(exception)
     template_name = 'register.html'
-    context = {'title': 'Register', 'user_form':user_form, 'account_form':account_form}
+    context = {'title': 'Register', 'user_form': user_form,
+               'account_form': account_form}
     return render(request, template_name, context)
 
 
@@ -243,35 +244,29 @@ def add_expense_view(request, group_id):
     account = Account.objects.get(user=request.user)
     group = Group.objects.get(group_id=group_id)
     group_members = GroupMember.objects.filter(group_fk=group)
-    form = ExpenseForm(request.POST or None)
     members = []
-    ratio_forms = []
     for member in group_members:
         members.append(member.member_fk)
-        ratio_form = RatioForm(None)
-        ratio_form.label_suffix = member.member_fk.user.get_short_name()
-        ratio_forms.append(ratio_form)
-    if form.is_valid():
+    if request.method == 'POST':
+        print(request.POST)
         try:
-            for key, value in request.POST.lists():
-                if key == 'ratio':
-                    ratioes = value
             expense_type = 'payment'
-            title = form.data['title']
-            payer_id = form.data['payer_id']
+            title = request.POST['title']
+            payer_id = request.POST['payer_id']
             payer = Account.objects.get(
                 user=User.objects.get(username=payer_id))
-            cost = int(form.data['cost'])
+            cost = int(request.POST['cost'])
             expense = Expense(expense_type=expense_type, group_fk=group, adder_fk=account,
                               payer_fk=payer, title=title, cost=cost)
             expense.save()
-            for i in range(len(members)):
+            for member in members:
+                ratio_of_username = f'ratio_of_{member.user.username}'
+                ratio = int(request.POST[ratio_of_username])
                 ExpenseRatio.objects.create(expense_fk=expense,
-                                            member_fk=members[i],
-                                            ratio=ratioes[i])
+                                            member_fk=member,
+                                            ratio=ratio)
             update_expense_balances(expense)
             update_group_balance_details(group)
-
             return redirect(group_view, group_id=group_id)
         except Exception as exception:
             print(exception)
@@ -279,7 +274,7 @@ def add_expense_view(request, group_id):
     else:
         title = 'Add New Expense'
     template_name = 'add-expense.html'
-    context = {'form': form, 'ratio_forms': ratio_forms,
+    context = {'members': members,
                'title': title, 'account': account}
     return render(request, template_name, context)
 

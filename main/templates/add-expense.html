@@ -9,13 +9,46 @@
 {% endblock %}
 
 {% block content %}
-<form method='POST' action=""> {% csrf_token %}
-    {{ form.as_p }}
 
-    {% for form in ratio_forms %}
-    {{ form.as_p }}
+
+<form method='POST' action=""> {% csrf_token %}
+
+    <div class="form-group row">
+        <label for="title" class="col-sm-2 col-form-label">Title</label>
+        <div class="col-sm-10">
+            <input name="title" class="form-control" id="title" placeholder="Title">
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="payer_id" class="col-sm-2 col-form-label">Payer</label>
+        <div class="col-sm-10">
+            <select name="payer_id" class="form-control" id="payer_id">
+                {% for member in members %}
+                <option>{{ member.user.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="cost" class="col-sm-2 col-form-label">Cost</label>
+        <div class="col-sm-10">
+            <input name="cost" class="form-control" id="cost" placeholder="Cost">
+        </div>
+    </div>
+
+    {% for member in members %}
+    <div class="form-group row">
+        <label for="ratio_of_{{ member.user.username }}" class="col-sm-2 col-form-label">Ratio of
+            {{ member.user.get_short_name }}</label>
+        <div class="col-sm-10">
+            <input name="ratio_of_{{ member.user.username }}" class="form-control"
+                id="ratio_of_{{ member.user.username }}" placeholder="Ratio of {{ member.user.get_short_name }}">
+        </div>
+    </div>
     {% endfor %}
-    
+
     <button type='submit'>Add Record</button>
 </form>
 {% endblock %}

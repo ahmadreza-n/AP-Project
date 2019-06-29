@@ -9,26 +9,28 @@
 {% endblock %}
 
 {% block content %}
-<ul class="list-group">
-    <li class="list-group-item">
-        Type: {{ expense.expense_type }}
-        </br>
-        Title: {{ expense.title }}
-        </br>
-        Cost: {{ expense.cost }} Tomans
-        </br>
-        Paid By: {{ expense.payer_fk.user.first_name }}
-        </br>
-        Added By: {{ expense.account_fk.user.first_name }}
-        </br>
-        Added At: {{ expense.date_time }}
-        <br>
-    </li>
-    <li class="list-group-item">
-        {% for expense_ratio in ratioes %}
-        {{ expense_ratio.member_fk.user.first_name }} used by ratio of: {{ expense_ratio.ratio }}
-        </br>
-        {% endfor %}
-    </li>
-</ul>
+<main role="main" class="container">
+    <ul class="list-group">
+        <li class="list-group-item">
+            Type: {{ expense.expense_type }}
+            </br>
+            Title: {{ expense.title }}
+            </br>
+            Cost: {{ expense.cost }} Tomans
+            </br>
+            Paid By: {{ expense.payer_fk.user.first_name }}
+            </br>
+            Added By: {{ expense.account_fk.user.first_name }}
+            </br>
+            Added At: {{ expense.date_time }}
+            <br>
+        </li>
+        <li class="list-group-item">
+            {% for expense_ratio in ratioes %}
+            {{ expense_ratio.member_fk.user.first_name }} used by ratio of: {{ expense_ratio.ratio }}
+            </br>
+            {% endfor %}
+        </li>
+    </ul>
+</main>
 {% endblock %}

@@ -38,13 +38,3 @@ class EditGroupModelForm(forms.ModelForm):
 
 class AddMemberForm(forms.Form):
     member_id = forms.SlugField(max_length=20)
-
-
-class RatioForm(forms.Form):
-    ratio = forms.IntegerField(label='Ratio of ')
-
-
-class ExpenseForm(forms.Form):
-    title = forms.CharField(max_length=20)
-    payer_id = forms.CharField(max_length=20)
-    cost = forms.IntegerField()

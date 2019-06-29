@@ -7,40 +7,57 @@
 {% endblock %}
 
 {% block navbar %}
-{% include 'navbar.html' with account=account %}
+<div class="dropdown" style="position: absolute; right: 10%; padding-top: 3px;">
+
+    {% if account.profile_picture %}
+    <img src="{{ account.get_profile_picture_address }}" class="rounded-circle" width="40" height="40"></img>
+    {% else %}
+    <img src="{% static 'img/test.jpeg' %}" class="rounded-circle" width="40" height="40"></img>
+    {% endif %}
+    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+        aria-expanded="false">
+        {{account.user.get_username}}
+    </button>
+    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+        <a class="dropdown-item" href="">Profile</a>
+        <a class="dropdown-item" href="/logout">Logout</a>
+        <a class="dropdown-item" href="{{ account.get_add_url }}">Create Group</a>
+    </div>
+</div>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item active" aria-current="page">{{account.user.get_username}}</li>
+
+    </ol>
+</nav>
 {% endblock %}
 
 {% block content %}
 <main role="main" class="container">
-<div class="jumbotron">
-    <h1 class="display-6">{{ profile_account.user.first_name }}'s Account</h1>
-    {% if account.profile_picture %}
-    <img src="{{ account.get_profile_picture_address }}" class="rounded-circle" width="180" height="180"></img>
-    {% else %}
-    <img src="{% static 'img/test.jpeg' %}" class="rounded-circle" width="180" height="180"></img>
-    {% endif %}
-    <p></p>
-</div>
+    <div class="jumbotron">
+        {% if account.profile_picture %}
+        <img src="{{ account.get_profile_picture_address }}" class="rounded-circle" width="90" height="90"></img>
+        {% else %}
+        <img src="{% static 'img/test.jpeg' %}" class="rounded-circle" width="90" height="90"
+            style="display: inline-block;"></img>
+        {% endif %}
+        <p style="font-size: 20px;display: inline-block;">{{ profile_account.user.first_name }}'s Account</p>
+    </div>
 
-<div class="row">
-    {% for group in groups %}
-    <div class="col col-12 col-sm-6 col-md-4 col-lg-3">
-        <div class="card">
-            <img src="{% static 'img/test.jpeg' %}" class="card-img-top" alt="img">
-            <div class="card-body">
-                <h5 class="card-title">{{ group.group_fk.group_name }}</h5>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
-                    card's content.</p>
-                <a href="{{ group.group_fk.get_absolute_url }}/veiw" class="btn btn-primary">View this group</a>
+    <div class="row">
+        {% for group in groups %}
+        <div class="col col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="card">
+                <img src="{% static 'img/test.jpeg' %}" class="card-img-top" alt="img">
+                <div class="card-body">
+                    <h5 class="card-title">{{ group.group_fk.group_name }}</h5>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
+                        card's content.</p>
+                    <a href="{{ group.group_fk.get_absolute_url }}/veiw" class="btn btn-primary">View this group</a>
+                </div>
             </div>
         </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-</div>
-<div class="row justify-content-center">
-    <a class="btn btn-primary col col-10 col-sm-6 col-md-4 col-lg-3" href="{{ profile_account.get_add_url }}"
-        role="button">Add
-        Group</a>
-</div>
 </main>
 {% endblock %}

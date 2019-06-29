@@ -29,7 +29,7 @@
 <main role="main" class="container">
     <div class="text-center">
         <img class="mb-4" src="{% static 'img/favicon.png' %}" alt="LOGO" width="72" height="72">
-        <h1 class="h3 mb-3 font-weight-normal">Please sign up</h1>
+        <h1 class="h3 mb-3 font-weight-normal">Please register</h1>
         <form class="form-signin" enctype="multipart/form-data" method="POST" action="/register"> {% csrf_token %}
             <label for="first_name" class="sr-only">First Name</label>
             <input name="first_name" type="text" class="form-control" placeholder="First Name" required autofocus>
@@ -52,7 +52,7 @@
                     <input type="checkbox" value="remember-me"> Remember me
                 </label>
             </div>
-            <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
             <p class="mt-5 mb-3 text-muted">&copy; 2019</p>
         </form>
     </div>

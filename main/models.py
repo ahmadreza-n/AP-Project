@@ -28,12 +28,17 @@ class Group(models.Model):
     group_id = models.SlugField(max_length=20, unique=True)
     group_name = models.CharField(max_length=20)
     admin_fk = models.ForeignKey(Account, on_delete=models.CASCADE)
+    group_picture = models.ImageField(
+        upload_to='main/static/img/group_pictures', blank=True)
 
     def __str__(self):
         return self.group_id
 
     def get_absolute_url(self):
         return f"/{self.group_id}"
+
+    def get_group_picture_address(self):
+        return self.group_picture.url[4:]
 
 
 class Expense(models.Model):
