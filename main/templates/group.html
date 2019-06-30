@@ -11,7 +11,7 @@
     {% if account.profile_picture %}
     <img src="{{ account.get_profile_picture_address }}" class="rounded-circle" width="40" height="40"></img>
     {% else %}
-    <img src="{% static 'img/test.jpeg' %}" class="rounded-circle" width="40" height="40"></img>
+    <img src="{% static 'img/default-profile-picture.png' %}" class="rounded-circle" width="40" height="40"></img>
     {% endif %}
     <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
         aria-expanded="false">
@@ -73,8 +73,14 @@
         <div class="row justify-content-center">
             {% for member in members %}
             <div class="col col-10 col-sm-5 col-md-2">
-                <img class="rounded-circle" src="{% static 'img/test.jpeg' %}" style="width: 100%;">
+                {% if member.member_fk.profile_picture %}
+                <img class="rounded-circle" src="{{ member.member_fk.get_profile_picture_address }}"
+                    style="width: 100%;">
                 </img>
+                {% else %}
+                <img class="rounded-circle" src="{% static 'img/default-profile-picture.png' %}" style="width: 100%;">
+                </img>
+                {% endif %}
                 <h2 style="padding-left: 10%;">{{ member.member_fk.user.first_name }}</h2>
                 <p style="padding-left: 10%;">Balance: {{ member.balance|floatformat:2 }}</p>
 

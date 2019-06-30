@@ -12,7 +12,7 @@
     {% if account.profile_picture %}
     <img src="{{ account.get_profile_picture_address }}" class="rounded-circle" width="40" height="40"></img>
     {% else %}
-    <img src="{% static 'img/test.jpeg' %}" class="rounded-circle" width="40" height="40"></img>
+    <img src="{% static 'img/default-profile-picture.png' %}" class="rounded-circle" width="40" height="40"></img>
     {% endif %}
     <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
         aria-expanded="false">
@@ -38,7 +38,7 @@
         {% if account.profile_picture %}
         <img src="{{ account.get_profile_picture_address }}" class="rounded-circle" width="90" height="90"></img>
         {% else %}
-        <img src="{% static 'img/test.jpeg' %}" class="rounded-circle" width="90" height="90"
+        <img src="{% static 'img/default-profile-picture.png' %}" class="rounded-circle" width="90" height="90"
             style="display: inline-block;"></img>
         {% endif %}
         <p style="font-size: 20px;display: inline-block;">{{ profile_account.user.get_short_name }}'s Account</p>
@@ -48,7 +48,11 @@
             {% for group in groups %}
             <div class="col col-12 col-sm-6 col-md-4 col-lg-3">
                 <div class="card">
-                    <img src="{% static 'img/test.jpeg' %}" class="card-img-top" alt="img">
+                    {% if group.group_picture %}
+                    <img src="{{ group.get_group_picture_address }}" class="card-img-top" alt="img">
+                    {% else %}
+                    <img src="{% static 'img/default-group-picture.png' %}" class="card-img-top" alt="img">
+                    {% endif %}
                     <div class="card-body">
                         <h5 class="card-title">{{ group.group_fk.group_name }}</h5>
                         <p class="card-text">Some quick example text to build on the card title and make up the bulk of
