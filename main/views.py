@@ -11,7 +11,6 @@ from .models import (User, Account, Group, GroupMember, Expense,
 
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-# from django.utils import timezone
 
 
 def home_view(request):
@@ -33,7 +32,6 @@ def about_view(request):
 def contact_view(request):
     form = ContactForm(request.POST or None)
     if form.is_valid():
-        print(form.cleaned_data)
         form = ContactForm()
     context = {"title": "Contact us", "form": form}
     return render(request, "form.html", context)
@@ -43,16 +41,13 @@ def register_view(request):
     user_form = UserForm(request.POST or None)
     account_form = AccountForm(request.POST or None, request.FILES or None)
     if user_form.is_valid() and account_form.is_valid():
-        print(request.FILES)
         try:
             user = user_form.save()
             account = account_form.save(commit=False)
             account.user = user
             if 'profile_picture' in request.FILES:
-                print('found it')
                 account.profile_picture = request.FILES['profile_picture']
             account.save()
-            # Account.objects.create(user=user)
             login(request, user)
             return redirect(account_view, username=user.get_username())
         except Exception as exception:
@@ -66,7 +61,6 @@ def register_view(request):
 @login_required
 def account_view(request, username):
     account = Account.objects.get(user=request.user)
-    print('\n\n\n', account.profile_picture, '\n\n\n')
     profile_account = Account.objects.get(
         user=User.objects.get(username=username))
     groups = GroupMember.objects.filter(member_fk=profile_account)
@@ -89,11 +83,7 @@ def login_view(request):
             username = request.POST['username']
             password = request.POST['password']
             user = User.objects.get(username=username, password=password)
-            # user = authenticate(request, username=username, password=password)
-            # print('\n\n\n', username, password, '\n\n\n')
-            # account = Account.objects.get(user=user)
             login(request, user)
-            print(user)
             return redirect(account_view, username=user.get_username())
         except Exception as exeption:
             print(exeption)
@@ -239,7 +229,6 @@ def add_expense_view(request, group_id):
     for member in group_members:
         members.append(member.member_fk)
     if request.method == 'POST':
-        print(request.POST)
         try:
             expense_type = 'payment'
             title = request.POST['title']
@@ -250,7 +239,6 @@ def add_expense_view(request, group_id):
             expense = Expense(expense_type=expense_type, group_fk=group, adder_fk=account,
                               payer_fk=payer, title=title, cost=cost)
             expense.save()
-            print('\n\n\nshit\n\n\n')
             for member in members:
                 ratio_of_username = f'ratio_of_{member.user.username}'
                 ratio = float(request.POST[ratio_of_username])
@@ -273,7 +261,6 @@ def add_expense_view(request, group_id):
 
 @login_required
 def expense_view(request, group_id, expense_pk):
-    # group = Group.objects.get(group_id=group_id)
     expense = Expense.objects.get(pk=expense_pk)
     ratioes = ExpenseRatio.objects.filter(expense_fk=expense)
     context = {'title': 'Account Detail',

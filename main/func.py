@@ -23,14 +23,12 @@ def update_expense_balances(expense):
                                                   member_fk=expense.payer_fk)
     member_payer.balance += cost
     member_payer.save()
-    # group_members = models.GroupMember.objects.filter(group_fk=group)
     for group_member in group_members:
         ratio = float(expense_ratioes.get(
             member_fk=group_member.member_fk).ratio)
         group_member = models.GroupMember.objects.get(group_fk=group,
                                                       member_fk=group_member.member_fk)
         group_member.balance -= cost * ratio / sum_of_ratioes
-        print(group_member.balance)
         group_member.save()
 
 
@@ -45,8 +43,6 @@ def update_group_balance_details(group):
         most_positive = max(balances, key=lambda k: balances[k])
         most_negative = min(balances, key=lambda k: balances[k])
         amount = 0
-        print('+: ', most_positive, balances[most_positive])
-        print('-: ', most_negative, balances[most_negative])
         if abs(balances[most_positive] - balances[most_negative]) < epsilon:
             break
         if abs(balances[most_positive]) < abs(balances[most_negative]):
@@ -58,7 +54,6 @@ def update_group_balance_details(group):
             balances[most_positive] -= amount
             balances[most_negative] = 0
         balance_details.append((most_negative, amount, most_positive))
-        print('\n\n\n', balance_details[-1], '\n\n\n')
 
     temps = models.BalanceDetail.objects.filter(group_fk=group)
     for temp in temps:

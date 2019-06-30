@@ -28,7 +28,9 @@
 {% block content %}
 <main role="main" class="container">
 <div class="text-center">
-    <img class="mb-4" src="{% static 'img/favicon.png' %}" alt="LOGO" width="72" height="72">
+    <a href="/">
+        <img class="mb-4" src="{% static 'img/favicon.png' %}" alt="LOGO" width="72" height="72">
+    </a>
     <h1 class="h3 mb-3 font-weight-normal">Please Login</h1>
     <form class="form-signin" method="POST" action="/login"> {% csrf_token %}
         <label for="username" class="sr-only">Username</label>

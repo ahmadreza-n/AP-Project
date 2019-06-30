@@ -4,10 +4,6 @@ from django.contrib.auth.models import User
 
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    # first_name = models.CharField(max_length=20)
-    # last_name = models.CharField(max_length=20)
-    # account_id = models.SlugField(max_length=20, unique=True)
-    # password = models.CharField(max_length=20)
     profile_picture = models.ImageField(
         upload_to='main/static/img/profile_pictures', blank=True)
 
@@ -55,9 +51,6 @@ class Expense(models.Model):
     def __str__(self):
         return self.title
 
-    # def get_absolute_url(self):
-    #     return f"/{self.title}"
-
 
 class GroupMember(models.Model):
     group_fk = models.ForeignKey(Group, on_delete=models.CASCADE)
@@ -82,7 +75,7 @@ class ExpenseRatio(models.Model):
 class BalanceDetail(models.Model):
     group_fk = models.ForeignKey(Group, on_delete=models.CASCADE)
     debtor_fk = models.ForeignKey(
-        Account, on_delete=models.CASCADE, related_name='debtor')  # related name #########
+        Account, on_delete=models.CASCADE, related_name='debtor')
     creditor_fk = models.ForeignKey(
         Account, on_delete=models.CASCADE, related_name='creditor')
     amount = models.FloatField(default=0)

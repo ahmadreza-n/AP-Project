@@ -1,6 +1,5 @@
 from django import forms
 from .models import User, Group, Account
-# from django.contrib.auth.forms import AuthenticationForm
 
 
 class ContactForm(forms.Form):
