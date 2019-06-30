@@ -250,6 +250,7 @@ def add_expense_view(request, group_id):
             expense = Expense(expense_type=expense_type, group_fk=group, adder_fk=account,
                               payer_fk=payer, title=title, cost=cost)
             expense.save()
+            print('\n\n\nshit\n\n\n')
             for member in members:
                 ratio_of_username = f'ratio_of_{member.user.username}'
                 ratio = float(request.POST[ratio_of_username])
