@@ -106,15 +106,8 @@ def login_view(request):
 
 @login_required
 def logout_view(request):
-    if request.method == 'POST':
-        if 'yes_sub' in request.POST:
-            logout(request)
-        elif 'no_sub' in request.POST:
-            pass
-        return redirect(home_view)
-    template_name = 'logout.html'
-    context = {'title': 'Logout'}
-    return render(request, template_name, context)
+    logout(request)
+    return redirect(home_view)
 
 
 @login_required
@@ -253,13 +246,13 @@ def add_expense_view(request, group_id):
             payer_id = request.POST['payer_id']
             payer = Account.objects.get(
                 user=User.objects.get(username=payer_id))
-            cost = int(request.POST['cost'])
+            cost = float(request.POST['cost'])
             expense = Expense(expense_type=expense_type, group_fk=group, adder_fk=account,
                               payer_fk=payer, title=title, cost=cost)
             expense.save()
             for member in members:
                 ratio_of_username = f'ratio_of_{member.user.username}'
-                ratio = int(request.POST[ratio_of_username])
+                ratio = float(request.POST[ratio_of_username])
                 ExpenseRatio.objects.create(expense_fk=expense,
                                             member_fk=member,
                                             ratio=ratio)
@@ -273,7 +266,7 @@ def add_expense_view(request, group_id):
         title = 'Add New Expense'
     template_name = 'add-expense.html'
     context = {'members': members,
-               'title': title, 'account': account}
+               'title': title, 'account': account, 'group':group}
     return render(request, template_name, context)
 
 
@@ -291,9 +284,12 @@ def expense_view(request, group_id, expense_pk):
 @login_required
 def delete_expense_view(request, group_id, expense_pk):
     expense = Expense.objects.get(pk=expense_pk)
+    group = Group.objects.get(group_id=group_id)
     if request.method == 'POST':
         if 'yes_sub' in request.POST:
             expense.delete()
+            update_group_balances(group)
+            update_group_balance_details(group)
             return redirect(group_view, group_id=group_id)
         elif 'no_sub' in request.POST:
             return redirect(expense_view, group_id=group_id, expense_pk=expense_pk)
@@ -319,11 +315,11 @@ def edit_expense_view(request, group_id, expense_pk):
             payer_id = request.POST['payer_id']
             expense.payer = Account.objects.get(
                 user=User.objects.get(username=payer_id))
-            expense.cost = int(request.POST['cost'])
+            expense.cost = float(request.POST['cost'])
             expense.save()
             for member in members:
                 ratio_of_username = f'ratio_of_{member.user.username}'
-                ratio = int(request.POST[ratio_of_username])
+                ratio = float(request.POST[ratio_of_username])
                 expense_ratio = ExpenseRatio.objects.get(expense_fk=expense,
                                                          member_fk=member)
                 expense_ratio.ratio = ratio

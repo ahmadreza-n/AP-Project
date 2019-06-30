@@ -13,7 +13,7 @@ urlpatterns = [
      path('logout', views.logout_view),
      path('add-group', views.add_group_view),
      path('<slug:username>', views.account_view),
-     path('<slug:group_id>/veiw', views.group_view),
+     path('<slug:group_id>/view', views.group_view),
      path('<slug:group_id>/add-expense', views.add_expense_view),
      path('<slug:group_id>/delete-group', views.delete_group_view),
      path('<slug:group_id>/edit-group', views.edit_group_view),

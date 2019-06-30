@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block navbar %}
-<div class="dropdown" style="position: absolute; right: 10%; padding-top: 3px;">
+<div class="dropdown" style="position: absolute; right: 7%; padding-top: 3px;">
 
     {% if account.profile_picture %}
     <img src="{{ account.get_profile_picture_address }}" class="rounded-circle" width="40" height="40"></img>
@@ -16,7 +16,7 @@
     {% endif %}
     <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
         aria-expanded="false">
-        {{account.user.get_username}}
+        {{account.user.get_short_name}}
     </button>
     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
         <a class="dropdown-item" href="">Profile</a>
@@ -26,7 +26,7 @@
 </div>
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item active" aria-current="page">{{account.user.get_username}}</li>
+        <li class="breadcrumb-item active" aria-current="page">{{account.user.get_short_name}}</li>
 
     </ol>
 </nav>
@@ -41,23 +41,26 @@
         <img src="{% static 'img/test.jpeg' %}" class="rounded-circle" width="90" height="90"
             style="display: inline-block;"></img>
         {% endif %}
-        <p style="font-size: 20px;display: inline-block;">{{ profile_account.user.first_name }}'s Account</p>
+        <p style="font-size: 20px;display: inline-block;">{{ profile_account.user.get_short_name }}'s Account</p>
     </div>
-
-    <div class="row">
-        {% for group in groups %}
-        <div class="col col-12 col-sm-6 col-md-4 col-lg-3">
-            <div class="card">
-                <img src="{% static 'img/test.jpeg' %}" class="card-img-top" alt="img">
-                <div class="card-body">
-                    <h5 class="card-title">{{ group.group_fk.group_name }}</h5>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
-                        card's content.</p>
-                    <a href="{{ group.group_fk.get_absolute_url }}/veiw" class="btn btn-primary">View this group</a>
+    <div class="jumbotron">
+        <div class="row">
+            {% for group in groups %}
+            <div class="col col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="card">
+                    <img src="{% static 'img/test.jpeg' %}" class="card-img-top" alt="img">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ group.group_fk.group_name }}</h5>
+                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of
+                            the
+                            card's content.</p>
+                        <a href="{{ group.group_fk.get_absolute_url }}/view" class="btn btn-outline-primary">View this
+                            group</a>
+                    </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
 </main>
 {% endblock %}

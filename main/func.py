@@ -15,17 +15,18 @@ def update_expense_balances(expense):
     group = expense.group_fk
     group_members = models.GroupMember.objects.filter(group_fk=group)
     expense_ratioes = models.ExpenseRatio.objects.filter(expense_fk=expense)
-    cost = int(expense.cost)
+    cost = float(expense.cost)
     sum_of_ratioes = 0
     for expense_ratio in expense_ratioes:
-        sum_of_ratioes += int(expense_ratio.ratio)
+        sum_of_ratioes += float(expense_ratio.ratio)
     member_payer = models.GroupMember.objects.get(group_fk=group,
                                                   member_fk=expense.payer_fk)
     member_payer.balance += cost
     member_payer.save()
     # group_members = models.GroupMember.objects.filter(group_fk=group)
     for group_member in group_members:
-        ratio = int(expense_ratioes.get(member_fk=group_member.member_fk).ratio)
+        ratio = float(expense_ratioes.get(
+            member_fk=group_member.member_fk).ratio)
         group_member = models.GroupMember.objects.get(group_fk=group,
                                                       member_fk=group_member.member_fk)
         group_member.balance -= cost * ratio / sum_of_ratioes
@@ -39,11 +40,14 @@ def update_group_balance_details(group):
     for group_member in group_members:
         balances[group_member.member_fk.user.username] = group_member.balance
     balance_details = []
+    epsilon = 0.0000001
     for i in range(len(group_members)):
         most_positive = max(balances, key=lambda k: balances[k])
         most_negative = min(balances, key=lambda k: balances[k])
         amount = 0
-        if balances[most_positive] == balances[most_negative]:
+        print('+: ', most_positive, balances[most_positive])
+        print('-: ', most_negative, balances[most_negative])
+        if abs(balances[most_positive] - balances[most_negative]) < epsilon:
             break
         if abs(balances[most_positive]) < abs(balances[most_negative]):
             amount = abs(balances[most_positive])
@@ -54,6 +58,7 @@ def update_group_balance_details(group):
             balances[most_positive] -= amount
             balances[most_negative] = 0
         balance_details.append((most_negative, amount, most_positive))
+        print('\n\n\n', balance_details[-1], '\n\n\n')
 
     temps = models.BalanceDetail.objects.filter(group_fk=group)
     for temp in temps:
@@ -64,16 +69,19 @@ def update_group_balance_details(group):
         creditor_fk = models.Account.objects.get(
             user=models.User.objects.get(username=balance_detail[2]))
         models.BalanceDetail.objects.create(group_fk=group, debtor_fk=debtor_fk,
-                                  creditor_fk=creditor_fk, amount=balance_detail[1])
+                                            creditor_fk=creditor_fk, amount=balance_detail[1])
 
 
 def settle(account, group, settler):
     members = models.GroupMember.objects.filter(group_fk=group)
-    balance = models.GroupMember.objects.get(group_fk=group, member_fk=settler).balance
+    balance = models.GroupMember.objects.get(
+        group_fk=group, member_fk=settler).balance
     if balance > 0:
-        balance_details = models.BalanceDetail.objects.filter(group_fk=group, creditor_fk=settler)
+        balance_details = models.BalanceDetail.objects.filter(
+            group_fk=group, creditor_fk=settler)
     else:
-        balance_details = models.BalanceDetail.objects.filter(group_fk=group, debtor_fk=settler)
+        balance_details = models.BalanceDetail.objects.filter(
+            group_fk=group, debtor_fk=settler)
     for balance_detail in balance_details:
         expense_type = 'settle'
         title = settler.user.username
@@ -94,7 +102,7 @@ def settle(account, group, settler):
             if members[i].member_fk == balance_detail.creditor_fk:
                 ratio = 1
             models.ExpenseRatio.objects.create(expense_fk=expense,
-                                       member_fk=members[i].member_fk,
-                                       ratio=ratio)
+                                               member_fk=members[i].member_fk,
+                                               ratio=ratio)
         update_expense_balances(expense)
         update_group_balance_details(group)

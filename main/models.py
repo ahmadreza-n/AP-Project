@@ -85,7 +85,7 @@ class BalanceDetail(models.Model):
         Account, on_delete=models.CASCADE, related_name='debtor')  # related name #########
     creditor_fk = models.ForeignKey(
         Account, on_delete=models.CASCADE, related_name='creditor')
-    amount = models.IntegerField(default=0)
+    amount = models.FloatField(default=0)
 
     def __str__(self):
         string = f'{self.debtor_fk.user.username} '
