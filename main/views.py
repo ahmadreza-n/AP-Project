@@ -67,13 +67,11 @@ def account_view(request, username):
     if profile_account == account:
         template_name = 'account.html'
         title = 'Account Detail'
+        context = {'title': title,
+                   'account': account, 'groups': groups}
+        return render(request, template_name, context)
     else:
-        template_name = 'profile.html'
-        title = 'Profile Detail'
-    context = {'title': title,
-               'account': account, 'groups': groups,
-               'profile_account': profile_account}
-    return render(request, template_name, context)
+        return redirect(home_view)
 
 
 def login_view(request):
@@ -146,16 +144,8 @@ def edit_group_view(request, group_id):
 @login_required
 def delete_group_view(request, group_id):
     group = Group.objects.get(group_id=group_id)
-    if request.method == 'POST':
-        if 'yes_sub' in request.POST:
-            group.delete()
-            return redirect(account_view, username=request.user.get_username())
-        elif 'no_sub' in request.POST:
-            return redirect(group_view, group_id=group_id)
-    title = 'Delete Group'
-    template_name = 'delete-group.html'
-    context = {'title': title}
-    return render(request, template_name, context)
+    group.delete()
+    return redirect(account_view, username=request.user.get_username())
 
 
 @login_required
@@ -165,16 +155,8 @@ def settle_view(request, group_id, settler_id):
     settler = Account.objects.get(
         user=User.objects.get(username=settler_id))
 
-    if request.method == 'POST':
-        if 'yes_sub' in request.POST:
-            settle(account, group, settler)
-            return redirect(group_view, group_id=group_id)
-        elif 'no_sub' in request.POST:
-            return redirect(group_view, group_id=group_id)
-    title = 'Settle Member'
-    template_name = 'settle.html'
-    context = {'title': title, 'settler': settler}
-    return render(request, template_name, context)
+    settle(account, group, settler)
+    return redirect(group_view, group_id=group_id)
 
 
 @login_required
@@ -203,7 +185,10 @@ def group_view(request, group_id):
     expenses = Expense.objects.filter(group_fk=group)
 
     balance_details = BalanceDetail.objects.filter(group_fk=group)
-
+    ratioes_list = []
+    for expense in expenses:
+        ratioes = ExpenseRatio.objects.filter(expense_fk=expense)
+        ratioes_list.append(ratioes)
     details = {}
     for member in members:
         temp = {}
@@ -216,7 +201,8 @@ def group_view(request, group_id):
 
     context = {'title': title, 'group': group,
                'members': members, 'account': account,
-               'expenses': expenses, 'details': details}
+               'expenses': expenses, 'details': details,
+               'ratioes_list': ratioes_list}
     return render(request, template_name, context)
 
 
@@ -255,17 +241,7 @@ def add_expense_view(request, group_id):
         title = 'Add New Expense'
     template_name = 'add-expense.html'
     context = {'members': members,
-               'title': title, 'account': account, 'group':group}
-    return render(request, template_name, context)
-
-
-@login_required
-def expense_view(request, group_id, expense_pk):
-    expense = Expense.objects.get(pk=expense_pk)
-    ratioes = ExpenseRatio.objects.filter(expense_fk=expense)
-    context = {'title': 'Account Detail',
-               'expense': expense, 'ratioes': ratioes}
-    template_name = 'expense.html'
+               'title': title, 'account': account, 'group': group}
     return render(request, template_name, context)
 
 
@@ -273,19 +249,10 @@ def expense_view(request, group_id, expense_pk):
 def delete_expense_view(request, group_id, expense_pk):
     expense = Expense.objects.get(pk=expense_pk)
     group = Group.objects.get(group_id=group_id)
-    if request.method == 'POST':
-        if 'yes_sub' in request.POST:
-            expense.delete()
-            update_group_balances(group)
-            update_group_balance_details(group)
-            return redirect(group_view, group_id=group_id)
-        elif 'no_sub' in request.POST:
-            return redirect(expense_view, group_id=group_id, expense_pk=expense_pk)
-    title = 'Delete Expense'
-    template_name = 'delete-expense.html'
-    context = {'title': title}
-    return render(request, template_name, context)
-
+    expense.delete()
+    update_group_balances(group)
+    update_group_balance_details(group)
+    return redirect(group_view, group_id=group_id)
 
 
 @login_required
@@ -301,8 +268,9 @@ def edit_expense_view(request, group_id, expense_pk):
         try:
             expense.title = request.POST['title']
             payer_id = request.POST['payer_id']
-            expense.payer = Account.objects.get(
+            expense.payer_fk = Account.objects.get(
                 user=User.objects.get(username=payer_id))
+
             expense.cost = float(request.POST['cost'])
             expense.save()
             for member in members:
@@ -312,15 +280,15 @@ def edit_expense_view(request, group_id, expense_pk):
                                                          member_fk=member)
                 expense_ratio.ratio = ratio
                 expense_ratio.save()
-            update_expense_balances(expense)
+            update_group_balances(group)
             update_group_balance_details(group)
-            return redirect(expense_view, group_id=group_id, expense_pk=expense_pk)
+            return redirect(group_view, group_id=group_id)
         except Exception as exception:
             print(exception)
             title = 'Add New Expense Error'
     else:
         title = 'Edit Expense'
     template_name = 'edit-expense.html'
-    context = {'members': members, 'expense':expense,
+    context = {'members': members, 'expense': expense,
                'title': title, 'account': account}
     return render(request, template_name, context)

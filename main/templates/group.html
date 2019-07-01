@@ -87,8 +87,8 @@
 
             <div class="col col-10 col-md-2">
                 <a role="button" class="btn btn-outline-primary" style="width: 100%;" data-toggle="collapse"
-                    href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Add Member</a>
-                <div class="collapse" id="collapseExample">
+                    href="#addMember" aria-expanded="false" aria-controls="addMember">Add Member</a>
+                <div class="collapse" id="addMember">
 
                     <form method='POST' action='' enctype='multipart/form-data'> {% csrf_token %}
                         <label for="member_id" class="sr-only">Member id</label>
@@ -102,14 +102,49 @@
             </div>
 
             <div class="col col-10 col-md-2">
-                <a role="button" class="btn btn-outline-secondary" style="width: 100%;" href="edit-group">Manage
-                    Group</a>
+                <button class="btn btn-outline-secondary" style="width: 100%;" data-toggle="modal"
+                    data-target="#editGroup">Manage
+                    Group</button>
             </div>
 
-            <div class="col col-10 col-md-2">
-                <a role="button" class="btn btn-outline-danger" style="width: 100%;" href="delete-group">Delete
-                    Group</a>
+            <div class="modal fade" id="editGroup" tabindex="-1" role="dialog" aria-labelledby="addExpenseTitle"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addExpenseTitle">Add Expense</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                        </div>
+                    </div>
+                </div>
             </div>
+
+
+
+            <div class="col col-10 col-md-2">
+                <a role="button" class="btn btn-outline-danger" data-toggle="collapse" style="width: 100%;"
+                    href="#DeleteGroup" aria-expanded="false" aria-controls="DeleteGroup">Delete</a>
+                <div class="collapse alert-danger" id="DeleteGroup">
+                    <div class="row justify-content-center">
+                        Are you sure?
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col col-9">
+                            <a href="delete-group" class="btn btn-outline-danger" style="width: 100%">Yes</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
 
             {% endif %}
         </div>
@@ -121,22 +156,38 @@
             <div class="col col-12 col-sm-6 col-md-4 col-lg-3">
                 {% if member.member_fk.profile_picture %}
                 <img class="rounded-circle" src="{{ member.member_fk.get_profile_picture_address }}"
-                    style="width: 100%;">
+                    style="width: 90%; padding-top: 2%;">
                 </img>
                 {% else %}
-                <img class="rounded-circle" src="{% static 'img/default-profile-picture.png' %}" style="width: 100%;">
+                <img class="rounded-circle" src="{% static 'img/default-profile-picture.png' %}"
+                    style="width: 90%; padding-top: 2%;">
                 </img>
                 {% endif %}
-                <h2 style="padding-left: 10%;">{{ member.member_fk.user.first_name }}</h2>
+                <h4 style="padding-left: 10%;">{{ member.member_fk.user.first_name }}</h4>
                 <p style="padding-left: 10%;">Balance: {{ member.balance|floatformat:2 }}</p>
 
-
-                <button style="width: 100%;" class="btn btn-outline-info" type="button" data-toggle="collapse"
-                    data-target="#{{ member.member_fk.user.first_name }}" aria-expanded="false"
-                    aria-controls="{{ member.member_fk.user.first_name }}">
+                {% if member.balance > 0.009 %}
+                <button style="width: 100%;" class="btn btn-outline-primary" type="button" data-toggle="collapse"
+                    data-target="#{{ member.member_fk.user.username }}" aria-expanded="false"
+                    aria-controls="{{ member.member_fk.user.username }}">
                     Details
                 </button>
-                <div class="collapse" id="{{ member.member_fk.user.first_name }}">
+                {% elif member.balance < -0.009 %}
+                <button style="width: 100%;" class="btn btn-outline-primary" type="button" data-toggle="collapse"
+                    data-target="#{{ member.member_fk.user.username }}" aria-expanded="false"
+                    aria-controls="{{ member.member_fk.user.username }}">
+                    Details
+                </button>
+                {% else %}
+                <button style="width: 100%;" class="btn btn-outline-dark" type="button" data-toggle="collapse"
+                    data-target="#{{ member.member_fk.user.username }}" aria-expanded="false"
+                    aria-controls="{{ member.member_fk.user.username }}" disabled>
+                    Details
+                </button>
+
+                {% endif %}
+
+                <div class="collapse" id="{{ member.member_fk.user.username }}">
                     <div class="card-header">
                         {% if member.balance > 0 %}
                         Credits:
@@ -186,16 +237,16 @@
                         <div class="card-body">
                             <h5 class="card-title">{{ expense.title }}</h5>
                             <p class="card-text">Cost: {{ expense.cost|floatformat:2 }} Tomans</p>
-                            <button role="button" href="{{ expense.pk }}" class="btn btn-outline-info"
-                                style="width: 100%" data-toggle="modal" data-target="#expenseDetails">Details</button>
+                            <button role="button" class="btn btn-outline-info" style="width: 100%" data-toggle="modal"
+                                data-target="#a{{ expense.pk }}">Details</button>
                         </div>
                     </div>
-                    <div class="modal fade" id="expenseDetails" tabindex="-1" role="dialog"
-                        aria-labelledby="expenseDetailsTitle" aria-hidden="true">
+                    <div class="modal fade" id="a{{ expense.pk }}" tabindex="-1" role="dialog"
+                        aria-labelledby="a{{ expense.pk }}Title" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-scrollable" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="expenseDetailsTitle">Expense Details</h5>
+                                    <h5 class="modal-title" id="#a{{ expense.pk }}Title">Expense Details</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
@@ -217,19 +268,125 @@
                                             <br>
                                         </li>
                                         <li class="list-group-item">
-                                            {% for expense_ratio in ratioes %}
+                                            {% for expense_ratioes in ratioes_list %}
+                                            {% for expense_ratio in expense_ratioes %}
+                                            {% if expense_ratio.expense_fk == expense %}
                                             {{ expense_ratio.member_fk.user.first_name }} used by ratio of:
                                             {{ expense_ratio.ratio }}
                                             </br>
+                                            {% endif %}
+                                            {% endfor %}
                                             {% endfor %}
                                         </li>
                                     </ul>
-                                    <a class="btn btn-outline-danger" href="{{ expense.pk }}/delete-expense">Delete</a>
-                                    <a class="btn btn-outline-warning" href="{{ expense.pk }}/edit-expense">Edit</a>
+
+                                    <div class="row justify-content-center">
+                                        <div class="col col-5">
+                                            <a role="button" class="btn btn-outline-danger" data-toggle="collapse"
+                                                style="width: 100%;" href="#Delete{{ expense.pk }}"
+                                                aria-expanded="false" aria-controls="Delete{{ expense.pk }}">Delete</a>
+                                            <div class="collapse alert-danger" id="Delete{{ expense.pk }}">
+                                                <div class="row justify-content-center">
+                                                    Are you sure?
+                                                </div>
+                                                <div class="row justify-content-center">
+                                                    <div class="col col-5">
+                                                        <a href="{{ expense.pk }}/delete-expense"
+                                                            class="btn btn-outline-danger" style="width: 100%">Yes</a>
+                                                    </div>
+                                                    <div class="col col-5">
+                                                        <button type="button" class="btn btn-outline-secondary"
+                                                            style="width: 100%" data-dismiss="modal">No</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col col-5 offset-1">
+                                            <a class="btn btn-outline-warning" style="width: 100%;" data-toggle="modal"
+                                                style="width: 100%;" href="#Edit{{ expense.pk }}" aria-expanded="false"
+                                                aria-controls="Edit{{ expense.pk }}">Edit</a>
+                                        </div>
+                                        <div class="modal fade" id="Edit{{ expense.pk }}" tabindex="-1" role="dialog"
+                                            aria-labelledby="Edit{{ expense.pk }}Title" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-scrollable" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="Edit{{expense.pk}}Title">Edit
+                                                            Expense</h5>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+
+                                                        <form method='POST' action="{{expense.pk}}/edit-expense">
+                                                            {% csrf_token %}
+
+                                                            <div class="form-group row">
+                                                                <label for="title"
+                                                                    class="col-sm-2 col-form-label">Title</label>
+                                                                <div class="col-sm-10">
+                                                                    <input name="title" class="form-control" id="title"
+                                                                        value="{{ expense.title }}" placeholder="Title">
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group row">
+                                                                <label for="payer_id"
+                                                                    class="col-sm-2 col-form-label">Payer</label>
+                                                                <div class="col-sm-10">
+                                                                    <select name="payer_id" class="form-control"
+                                                                        id="payer_id"
+                                                                        value="{{ expense.payer.payer_id }}">
+                                                                        {% for member in members %}
+                                                                        <option>{{ member.member_fk.user.username }}
+                                                                        </option>
+                                                                        {% endfor %}
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group row">
+                                                                <label for="cost"
+                                                                    class="col-sm-2 col-form-label">Cost</label>
+                                                                <div class="col-sm-10">
+                                                                    <input name="cost" class="form-control" id="cost"
+                                                                        value="{{ expense.cost }}" placeholder="Cost">
+                                                                </div>
+                                                            </div>
+
+                                                            {% for member in members %}
+                                                            <div class="form-group row">
+                                                                <label for="ratio_of_{{ member.user.username }}"
+                                                                    class="col-sm-2 col-form-label">Ratio of
+                                                                    {{ member.member_fk.user.get_short_name }}</label>
+                                                                <div class="col-sm-10">
+                                                                    <input
+                                                                        name="ratio_of_{{ member.member_fk.user.username }}"
+                                                                        class="form-control"
+                                                                        id="ratio_of_{{ member.member_fk.user.username }}"
+                                                                        placeholder="Ratio of {{ member.member_fk.user.get_short_name }}">
+                                                                </div>
+                                                            </div>
+                                                            {% endfor %}
+
+                                                            <button type="submit" class="btn btn-outline-warning">Edit
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-dismiss="modal">Close</button>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-
                                 </div>
                             </div>
                         </div>
@@ -240,12 +397,4 @@
         </div>
 
 </main>
-{% endblock %}
-
-{% block js %}
-<script>
-    $('.popover-dismiss').popover({
-        trigger: 'focus'
-    })
-</script>
 {% endblock %}

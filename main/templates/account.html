@@ -13,15 +13,6 @@
 {% block content %}
 <main role="main" class="container">
     <div class="jumbotron">
-        {% if account.profile_picture %}
-        <img src="{{ account.get_profile_picture_address }}" class="rounded-circle" width="90" height="90"></img>
-        {% else %}
-        <img src="{% static 'img/default-profile-picture.png' %}" class="rounded-circle" width="90" height="90"
-            style="display: inline-block;"></img>
-        {% endif %}
-        <p style="font-size: 20px;display: inline-block;">{{ profile_account.user.get_short_name }}'s Account</p>
-    </div>
-    <div class="jumbotron">
         <div class="row">
             {% for group in groups %}
             <div class="col col-12 col-sm-6 col-md-4 col-lg-3">
