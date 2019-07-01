@@ -58,7 +58,7 @@ def register_view(request):
     return render(request, template_name, context)
 
 
-@login_required
+@login_required(login_url='/login')
 def account_view(request, username):
     account = Account.objects.get(user=request.user)
     profile_account = Account.objects.get(
@@ -92,63 +92,50 @@ def login_view(request):
     return render(request, template_name, context)
 
 
-@login_required
+@login_required(login_url='/login')
 def logout_view(request):
     logout(request)
     return redirect(home_view)
 
 
-@login_required
+@login_required(login_url='/login')
 def add_group_view(request):
     account = Account.objects.get(user=request.user)
-    if request.method == 'POST':
-        try:
-            group_id = request.POST['group_id']
-            group_name = request.POST['group_name']
-            group = Group.objects.create(group_id=group_id,
-                                         group_name=group_name,
-                                         admin_fk=account)
-            GroupMember.objects.create(group_fk=group, member_fk=account)
-            return redirect(group_view, group_id=group_id)
-        except Exception as exception:
-            print(exception)
-            title = 'Add New Group Error'
-    else:
-        title = 'Add New Group'
-    template_name = 'add-group.html'
-    context = {'title': title, 'account': account}
-    return render(request, template_name, context)
+    try:
+        group_id = request.POST['group_id']
+        group_name = request.POST['group_name']
+        group = Group.objects.create(group_id=group_id,
+                                     group_name=group_name,
+                                     admin_fk=account)
+        GroupMember.objects.create(group_fk=group, member_fk=account)
+    except Exception as exception:
+        print(exception)
+        title = 'Add New Group Error'
+    return redirect(group_view, group_id=group_id)
 
 
-@login_required
+@login_required(login_url='/login')
 def edit_group_view(request, group_id):
     account = Account.objects.get(user=request.user)
     group = Group.objects.get(group_id=group_id)
-    if request.method == 'POST':
-        try:
-            group_name = request.POST['group_name']
-            group.group_name = group_name
-            group.save()
-            return redirect(group_view, group_id=group_id)
-        except Exception as exception:
-            print(exception)
-            title = 'Edit Group Error'
-    else:
-        title = 'Edit Group'
-    template_name = 'edit-group.html'
-    context = {'title': title,
-               'account': account, 'group': group}
-    return render(request, template_name, context)
+    try:
+        group_name = request.POST['group_name']
+        group.group_name = group_name
+        group.save()
+    except Exception as exception:
+        print(exception)
+        title = 'Edit Group Error'
+    return redirect(group_view, group_id=group_id)
 
 
-@login_required
+@login_required(login_url='/login')
 def delete_group_view(request, group_id):
     group = Group.objects.get(group_id=group_id)
     group.delete()
     return redirect(account_view, username=request.user.get_username())
 
 
-@login_required
+@login_required(login_url='/login')
 def settle_view(request, group_id, settler_id):
     account = Account.objects.get(user=request.user)
     group = Group.objects.get(group_id=group_id)
@@ -159,7 +146,7 @@ def settle_view(request, group_id, settler_id):
     return redirect(group_view, group_id=group_id)
 
 
-@login_required
+@login_required(login_url='/login')
 def group_view(request, group_id):
     if request.method == 'POST':
         try:
@@ -206,7 +193,7 @@ def group_view(request, group_id):
     return render(request, template_name, context)
 
 
-@login_required
+@login_required(login_url='/login')
 def add_expense_view(request, group_id):
     account = Account.objects.get(user=request.user)
     group = Group.objects.get(group_id=group_id)
@@ -214,38 +201,30 @@ def add_expense_view(request, group_id):
     members = []
     for member in group_members:
         members.append(member.member_fk)
-    if request.method == 'POST':
-        try:
-            expense_type = 'payment'
-            title = request.POST['title']
-            payer_id = request.POST['payer_id']
-            payer = Account.objects.get(
-                user=User.objects.get(username=payer_id))
-            cost = float(request.POST['cost'])
-            expense = Expense(expense_type=expense_type, group_fk=group, adder_fk=account,
-                              payer_fk=payer, title=title, cost=cost)
-            expense.save()
-            for member in members:
-                ratio_of_username = f'ratio_of_{member.user.username}'
-                ratio = float(request.POST[ratio_of_username])
-                ExpenseRatio.objects.create(expense_fk=expense,
-                                            member_fk=member,
-                                            ratio=ratio)
-            update_expense_balances(expense)
-            update_group_balance_details(group)
-            return redirect(group_view, group_id=group_id)
-        except Exception as exception:
-            print(exception)
-            title = 'Add New Expense Error'
-    else:
-        title = 'Add New Expense'
-    template_name = 'add-expense.html'
-    context = {'members': members,
-               'title': title, 'account': account, 'group': group}
-    return render(request, template_name, context)
+    try:
+        expense_type = 'payment'
+        title = request.POST['title']
+        payer_id = request.POST['payer_id']
+        payer = Account.objects.get(
+            user=User.objects.get(username=payer_id))
+        cost = float(request.POST['cost'])
+        expense = Expense(expense_type=expense_type, group_fk=group, adder_fk=account,
+                          payer_fk=payer, title=title, cost=cost)
+        expense.save()
+        for member in members:
+            ratio_of_username = f'ratio_of_{member.user.username}'
+            ratio = float(request.POST[ratio_of_username])
+            ExpenseRatio.objects.create(expense_fk=expense,
+                                        member_fk=member,
+                                        ratio=ratio)
+        update_expense_balances(expense)
+        update_group_balance_details(group)
+    except Exception as exception:
+        print(exception)
+    return redirect(group_view, group_id=group_id)
 
 
-@login_required
+@login_required(login_url='/login')
 def delete_expense_view(request, group_id, expense_pk):
     expense = Expense.objects.get(pk=expense_pk)
     group = Group.objects.get(group_id=group_id)
@@ -255,7 +234,7 @@ def delete_expense_view(request, group_id, expense_pk):
     return redirect(group_view, group_id=group_id)
 
 
-@login_required
+@login_required(login_url='/login')
 def edit_expense_view(request, group_id, expense_pk):
     account = Account.objects.get(user=request.user)
     group = Group.objects.get(group_id=group_id)
@@ -264,31 +243,23 @@ def edit_expense_view(request, group_id, expense_pk):
     members = []
     for member in group_members:
         members.append(member.member_fk)
-    if request.method == 'POST':
-        try:
-            expense.title = request.POST['title']
-            payer_id = request.POST['payer_id']
-            expense.payer_fk = Account.objects.get(
-                user=User.objects.get(username=payer_id))
+    try:
+        expense.title = request.POST['title']
+        payer_id = request.POST['payer_id']
+        expense.payer_fk = Account.objects.get(
+            user=User.objects.get(username=payer_id))
 
-            expense.cost = float(request.POST['cost'])
-            expense.save()
-            for member in members:
-                ratio_of_username = f'ratio_of_{member.user.username}'
-                ratio = float(request.POST[ratio_of_username])
-                expense_ratio = ExpenseRatio.objects.get(expense_fk=expense,
-                                                         member_fk=member)
-                expense_ratio.ratio = ratio
-                expense_ratio.save()
-            update_group_balances(group)
-            update_group_balance_details(group)
-            return redirect(group_view, group_id=group_id)
-        except Exception as exception:
-            print(exception)
-            title = 'Add New Expense Error'
-    else:
-        title = 'Edit Expense'
-    template_name = 'edit-expense.html'
-    context = {'members': members, 'expense': expense,
-               'title': title, 'account': account}
-    return render(request, template_name, context)
+        expense.cost = float(request.POST['cost'])
+        expense.save()
+        for member in members:
+            ratio_of_username = f'ratio_of_{member.user.username}'
+            ratio = float(request.POST[ratio_of_username])
+            expense_ratio = ExpenseRatio.objects.get(expense_fk=expense,
+                                                     member_fk=member)
+            expense_ratio.ratio = ratio
+            expense_ratio.save()
+        update_group_balances(group)
+        update_group_balance_details(group)
+    except Exception as exception:
+        print(exception)
+    return redirect(group_view, group_id=group_id)

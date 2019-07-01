@@ -58,7 +58,7 @@ class GroupMember(models.Model):
     balance = models.FloatField(default=0)
 
     def __str__(self):
-        return f'{self.member_fk.user.get_username()} is in {self.group_fk.group_name}'
+        return f'{self.member_fk.user.get_username()} is in {self.group_fk.group_id}'
 
 
 class ExpenseRatio(models.Model):
@@ -69,6 +69,7 @@ class ExpenseRatio(models.Model):
     def __str__(self):
         s = f'"{self.member_fk.user.username}" used "{self.expense_fk.title}"'
         s += f' by ratio of "{self.ratio}"'
+        s += f' in group {self.expense_fk.group_fk.group_id}'
         return s
 
 
